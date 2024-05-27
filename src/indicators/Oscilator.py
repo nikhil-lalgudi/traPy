@@ -111,3 +111,4 @@ def williams_r(data, window_length=14):
     high_low_range = data['High'].rolling(window_length).max() - data['Low'].rolling(window_length).min()
     williams_r = -100 * (data['High'] - data['Close']) / (high_low_range + 1e-10)
     return williams_r
+#14
