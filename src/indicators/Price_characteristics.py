@@ -162,3 +162,4 @@ def z_score(data, value):
     std_dev = np.std(data, ddof=1)
     z_score = (value - mean) / std_dev
     return z_score
+#25
