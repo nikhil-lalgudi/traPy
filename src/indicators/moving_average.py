@@ -182,3 +182,4 @@ def weighted_moving_average(data, window_length):
     weights = np.arange(1, window_length + 1)
     wma = np.convolve(data, weights, mode='valid') / weights.sum()
     return wma
+#19
