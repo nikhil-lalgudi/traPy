@@ -1,5 +1,5 @@
-#ifndef PDE_solver.hpp
-#define PDE_solver.hpp
+#ifndef PDE_SOLVER_HPP
+#define PDE_SOLVER_HPP
 
 #include <iostream>
 #include <vector>
