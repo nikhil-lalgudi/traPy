@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-plt.style.use('fivethirtyeight')
+%matplotlib notebook
 
 def alma(data, window_length, sigma=6.0, offset=0.85):
     m = offset * (window_length - 1)

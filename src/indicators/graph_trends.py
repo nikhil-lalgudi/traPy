@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
+%matplotlib notebook
+
 def plot_bollinger_bands(data, window=30):
     if 'Date' in data.columns:
         data.set_index('Date', inplace=True)
