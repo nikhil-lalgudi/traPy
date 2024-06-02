@@ -99,7 +99,8 @@ def true_strength_index(df, r, s):
     return TSI
 
 def ulcer_index(df, n):
-    df['Drawdown'] = ((df['Close'] - df['Close'].rolling(window=n).max()) / df['Close'].rolling(window=n).max()) * 100
+    df['Drawdown'] = ((df['Close'] - df['Close'].rolling(window=n).max())
+                       / df['Close'].rolling(window=n).max()) * 100
     UI = np.sqrt((df['Drawdown']**2).rolling(window=n).mean())
     return UI
 
@@ -160,6 +161,5 @@ def z_score(data, value):
     data = np.array(data)
     mean = np.mean(data)
     std_dev = np.std(data, ddof=1)
-    z_score = (value - mean) / std_dev
-    return z_score
+    return ((value - mean) / std_dev)
 #25
