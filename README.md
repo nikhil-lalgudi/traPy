@@ -8,6 +8,7 @@ Repo is open source and contains most well known technical indicators for techni
 
 # Core Features
 ## Indicators
+90 so far:
 *Graph-trends*: Bollinger Bands, Donchian Channels, fractal chaos bands, keltner channels, moving average envelopes, starc bands, price channels, pivot points, rolling pivot points, standard deviation channels, Ichimoku Cloud, Parabolic SAR
 
 *Moving averages*: alma, dema, epma, ema, hilbert transform instantaneous trendline, hull moving average, Kama, lsma, mesa adaptive moving average, mcginley dynamic, modified moving average, running moving average, simple moving average, smoothed moving average, tillson t3 moving average, tema, vwap, vwma, wma, frama, zlema, tema
