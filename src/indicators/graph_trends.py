@@ -431,4 +431,92 @@ def plot_standard_deviation_channels(data, window=20, num_std_dev=2):
 
     plt.tight_layout()
     plt.show()
-#10
+def ichimoku_cloud(df, n1=9, n2=26, n3=52):
+    # Calculate Tenkan-sen (Conversion Line)
+    df['tenkan_sen'] = (df['high'].rolling(window=n1).max() + df['low'].rolling(window=n1).min()) / 2
+
+    # Calculate Kijun-sen (Base Line)
+    df['kijun_sen'] = (df['high'].rolling(window=n2).max() + df['low'].rolling(window=n2).min()) / 2
+
+    # Calculate Senkou Span A (Leading Span A)
+    df['senkou_span_a'] = ((df['tenkan_sen'] + df['kijun_sen']) / 2).shift(n2)
+
+    # Calculate Senkou Span B (Leading Span B)
+    df['senkou_span_b'] = ((df['high'].rolling(window=n3).max() + df['low'].rolling(window=n3).min()) / 2).shift(n2)
+
+    # Calculate Chikou Span (Lagging Span)
+    df['chikou_span'] = df['close'].shift(-n2)
+    return df
+
+def plot_ichimoku_cloud(df):
+    plt.figure(figsize=(12, 6))
+    plt.plot(df.index, df['close'], label='Close', color='black')
+
+    # Plot Ichimoku Cloud components
+    plt.plot(df.index, df['tenkan_sen'], label='Tenkan-sen (Conversion Line)', color='red')
+    plt.plot(df.index, df['kijun_sen'], label='Kijun-sen (Base Line)', color='blue')
+    plt.plot(df.index, df['senkou_span_a'], label='Senkou Span A (Leading Span A)', color='green')
+    plt.plot(df.index, df['senkou_span_b'], label='Senkou Span B (Leading Span B)', color='orange')
+    plt.plot(df.index, df['chikou_span'], label='Chikou Span (Lagging Span)', color='purple')
+
+    # Fill the area between Senkou Span A and Senkou Span B to create the cloud
+    plt.fill_between(df.index, df['senkou_span_a'], df['senkou_span_b'], where=df['senkou_span_a'] >= df['senkou_span_b'], facecolor='lightgreen', interpolate=True, alpha=0.5)
+    plt.fill_between(df.index, df['senkou_span_a'], df['senkou_span_b'], where=df['senkou_span_a'] < df['senkou_span_b'], facecolor='lightcoral', interpolate=True, alpha=0.5)
+
+    plt.title('Ichimoku Cloud')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+def calculate_parabolic_sar(df, af_start=0.02, af_increment=0.02, af_max=0.2):
+    high = df['high']
+    low = df['low']
+    close = df['close']
+
+    # Initialize variables
+    af = af_start
+    ep = high[0]
+    sar = low[0]
+    uptrend = True
+    psar = [sar]
+
+    for i in range(1, len(df)):
+        if uptrend:
+            sar = sar + af * (ep - sar)
+            sar = min(sar, low[i - 1], low[i - 2] if i > 1 else low[i - 1])
+            if high[i] > ep:
+                ep = high[i]
+                af = min(af + af_increment, af_max)
+            if low[i] < sar:
+                uptrend = False
+                sar = ep
+                ep = low[i]
+                af = af_start
+        else:
+            sar = sar + af * (ep - sar)
+            sar = max(sar, high[i - 1], high[i - 2] if i > 1 else high[i - 1])
+            if low[i] < ep:
+                ep = low[i]
+                af = min(af + af_increment, af_max)
+            if high[i] > sar:
+                uptrend = True
+                sar = ep
+                ep = high[i]
+                af = af_start
+
+        psar.append(sar)
+
+    return pd.Series(psar, index=df.index)
+
+def plot_parabolic_sar(df):
+    plt.figure(figsize=(12, 6))
+    plt.plot(df.index, df['close'], label='Close', color='black')
+    plt.plot(df.index, df['psar'], label='Parabolic SAR', linestyle='dashed', color='blue')
+    plt.title('Parabolic SAR')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+#12

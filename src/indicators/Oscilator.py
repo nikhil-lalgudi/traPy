@@ -111,4 +111,54 @@ def williams_r(data, window_length=14):
     high_low_range = data['High'].rolling(window_length).max() - data['Low'].rolling(window_length).min()
     williams_r = -100 * (data['High'] - data['Close']) / (high_low_range + 1e-10)
     return williams_r
-#14
+
+def calculate_ema(series, period):
+    return series.ewm(span=period, adjust=False).mean()
+
+def calculate_eri(df, period=13):
+    df['ema'] = calculate_ema(df['close'], period)
+    df['bull_power'] = df['high'] - df['ema']
+    df['bear_power'] = df['low'] - df['ema']
+    return df
+
+def plot_eri(df):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
+
+    ax1.plot(df['date'], df['close'], label='Close Price')
+    ax1.set_title('Stock Price')
+    ax1.set_ylabel('Price')
+    ax1.legend()
+
+    ax2.plot(df['date'], df['bull_power'], label='Bull Power', color='green')
+    ax2.plot(df['date'], df['bear_power'], label='Bear Power', color='red')
+    ax2.set_title('Elder-Ray Index')
+    ax2.set_ylabel('Elder-Ray Index')
+    ax2.set_xlabel('Date')
+    ax2.legend()
+
+    plt.show()
+
+def calculate_rvi(df, period=10):
+    df['close_open'] = df['close'] - df['open']
+    df['high_low'] = df['high'] - df['low']
+    df['numerator'] = df['close_open'].rolling(window=period).mean()
+    df['denominator'] = df['high_low'].rolling(window=period).mean()
+    df['rvi'] = df['numerator'] / df['denominator']
+    df['rvi_signal'] = df['rvi'].rolling(window=4).mean()
+    return df
+
+def plot_rvi(df):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
+    ax1.plot(df['date'], df['close'], label='Close Price')
+    ax1.set_title('Stock Price')
+    ax1.set_ylabel('Price')
+    ax1.legend()
+    ax2.plot(df['date'], df['rvi'], label='RVI', color='blue')
+    ax2.plot(df['date'], df['rvi_signal'], label='Signal Line', color='orange')
+    ax2.set_title('Relative Vigor Index (RVI)')
+    ax2.set_ylabel('RVI')
+    ax2.set_xlabel('Date')
+    ax2.legend()
+    plt.show()
+
+# 16

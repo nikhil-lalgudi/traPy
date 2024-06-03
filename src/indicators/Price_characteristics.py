@@ -104,6 +104,114 @@ def ulcer_index(df, n):
     UI = np.sqrt((df['Drawdown']**2).rolling(window=n).mean())
     return UI
 
+def moving_average_crossover(data, short_window, long_window):
+    short_ma = data['Close'].rolling(window=short_window).mean()
+    long_ma = data['Close'].rolling(window=long_window).mean()
+    
+    crossover_points = []
+    
+    for i in range(1, len(data)):
+        if short_ma[i] > long_ma[i] and short_ma[i - 1] <= long_ma[i - 1]:
+            crossover_points.append((data.index[i], 'bullish'))
+        elif short_ma[i] < long_ma[i] and short_ma[i - 1] >= long_ma[i - 1]:
+            crossover_points.append((data.index[i], 'bearish'))
+    
+    return crossover_points
+
+def plot_moving_average_crossover(data, short_window, long_window):
+    crossover_points = moving_average_crossover(data, short_window, long_window)
+    plt.figure(figsize=(12, 6))
+    plt.plot(data.index, data['Close'], label='Close Price', color='blue')
+    short_ma = data['Close'].rolling(window=short_window).mean()
+    long_ma = data['Close'].rolling(window=long_window).mean()
+    plt.plot(data.index, short_ma, label='{}-day MA'.format(short_window), color='orange')
+    plt.plot(data.index, long_ma, label='{}-day MA'.format(long_window), color='green')
+
+    for date, crossover_type in crossover_points:
+        color = 'green' if crossover_type == 'bullish' else 'red'
+        plt.scatter(date, data.loc[date, 'Close'], color=color, s=50, marker='o', label=crossover_type)
+
+    plt.title('Moving Average Cross-Overs')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+def calculate_cci(df, period=20):
+    df['typical_price'] = (df['high'] + df['low'] + df['close']) / 3
+    df['sma_tp'] = df['typical_price'].rolling(window=period).mean()
+    df['mean_deviation'] = df['typical_price'].rolling(window=period).apply(lambda x: np.mean(np.abs(x - np.mean(x))), raw=True)
+    df['cci'] = (df['typical_price'] - df['sma_tp']) / (0.015 * df['mean_deviation'])
+    return df
+
+def plot_cci(df):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
+
+    ax1.plot(df['date'], df['close'], label='Close Price')
+    ax1.set_title('Stock Price')
+    ax1.set_ylabel('Price')
+    ax1.legend()
+
+    ax2.plot(df['date'], df['cci'], label='CCI', color='blue')
+    ax2.axhline(100, color='red', linestyle='--')
+    ax2.axhline(-100, color='red', linestyle='--')
+    ax2.set_title('Commodity Channel Index (CCI)')
+    ax2.set_ylabel('CCI')
+    ax2.set_xlabel('Date')
+    ax2.legend()
+    plt.show()
+
+def calculate_dmi(df, period=14):
+    df['plus_dm'] = np.where((df['high'] - df['high'].shift(1)) > (df['low'].shift(1) - df['low']), df['high'] - df['high'].shift(1), 0)
+    df['minus_dm'] = np.where((df['low'].shift(1) - df['low']) > (df['high'] - df['high'].shift(1)), df['low'].shift(1) - df['low'], 0)
+    df['atr'] = df[['high', 'low', 'close']].apply(lambda x: max(x[0] - x[1], abs(x[0] - x[2]), abs(x[1] - x[2])), axis=1).rolling(window=period).mean()
+    df['plus_di'] = 100 * (df['plus_dm'].rolling(window=period).mean() / df['atr'])
+    df['minus_di'] = 100 * (df['minus_dm'].rolling(window=period).mean() / df['atr'])
+    df['dx'] = 100 * abs(df['plus_di'] - df['minus_di']) / (df['plus_di'] + df['minus_di'])
+    df['adx'] = df['dx'].rolling(window=period).mean()
+    return df
+
+def plot_dmi(df):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
+    ax1.plot(df['date'], df['close'], label='Close Price')
+    ax1.set_title('Stock Price')
+    ax1.set_ylabel('Price')
+    ax1.legend()
+    ax2.plot(df['date'], df['plus_di'], label='+DI', color='green')
+    ax2.plot(df['date'], df['minus_di'], label='-DI', color='red')
+    ax2.plot(df['date'], df['adx'], label='ADX', color='blue')
+    ax2.set_title('Directional Movement Index (DMI)')
+    ax2.set_ylabel('DMI')
+    ax2.set_xlabel('Date')
+    ax2.legend()
+
+    plt.show()
+def calculate_vi(df, period=14):
+    df['tr'] = df[['high', 'low', 'close']].apply(lambda x: max(x[0] - x[1], abs(x[0] - x[2]), abs(x[1] - x[2])), axis=1)
+    df['tr_sum'] = df['tr'].rolling(window=period).sum()  
+    df['vm_plus'] = abs(df['high'] - df['low'].shift(1))
+    df['vm_minus'] = abs(df['low'] - df['high'].shift(1))
+    df['vm_plus_sum'] = df['vm_plus'].rolling(window=period).sum()
+    df['vm_minus_sum'] = df['vm_minus'].rolling(window=period).sum()
+    df['vi_plus'] = df['vm_plus_sum'] / df['tr_sum']
+    df['vi_minus'] = df['vm_minus_sum'] / df['tr_sum']
+    return df
+
+# Function to plot the Vortex Indicator
+def plot_vi(df):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
+    ax1.plot(df['date'], df['close'], label='Close Price')
+    ax1.set_title('Stock Price')
+    ax1.set_ylabel('Price')
+    ax1.legend()
+    ax2.plot(df['date'], df['vi_plus'], label='+VI', color='green')
+    ax2.plot(df['date'], df['vi_minus'], label='-VI', color='red')
+    ax2.set_title('Vortex Indicator (VI)')
+    ax2.set_ylabel('VI')
+    ax2.set_xlabel('Date')
+    ax2.legend()
+    plt.show()
 ## Numerical Analysis Functions
 
 def beta_coefficient(x, y):
@@ -162,4 +270,4 @@ def z_score(data, value):
     mean = np.mean(data)
     std_dev = np.std(data, ddof=1)
     return ((value - mean) / std_dev)
-#25
+#29

@@ -228,4 +228,71 @@ def zigzag_indicator_plot(df, pct_change):
     ax2.legend()
     ax2.grid(True)  
     plt.show()
-#4
+
+def calculate_kagi(df, reversal_amount=0.04):
+    kagi = []
+    direction = None
+    for i in range(1, len(df)):
+        if direction is None:
+            kagi.append(df['close'][i])
+            direction = 'up' if df['close'][i] > df['close'][i - 1] else 'down'
+        else:
+            if direction == 'up':
+                if df['close'][i] >= kagi[-1]:
+                    kagi.append(df['close'][i])
+                elif df['close'][i] <= kagi[-1] * (1 - reversal_amount):
+                    kagi.append(df['close'][i])
+                    direction = 'down'
+            else:
+                if df['close'][i] <= kagi[-1]:
+                    kagi.append(df['close'][i])
+                elif df['close'][i] >= kagi[-1] * (1 + reversal_amount):
+                    kagi.append(df['close'][i])
+                    direction = 'up'
+    df['kagi'] = kagi + [np.nan] * (len(df) - len(kagi))
+    return df
+
+def plot_kagi(df):
+    fig, ax = plt.subplots(figsize=(14, 10))
+    ax.plot(df['date'], df['kagi'], drawstyle='steps-post', label='Kagi Chart')
+    ax.set_title('Kagi Chart')
+    ax.set_ylabel('Price')
+    ax.set_xlabel('Date')
+    ax.legend()
+    plt.show()
+
+def calculate_line_break(df, num_lines=3):
+    lines = []
+    direction = None
+    for i in range(1, len(df)):
+        if direction is None:
+            lines.append(df['close'][i])
+            direction = 'up' if df['close'][i] > df['close'][i - 1] else 'down'
+        else:
+            if direction == 'up':
+                if df['close'][i] > max(lines[-num_lines:]):
+                    lines.append(df['close'][i])
+                    direction = 'up'
+                elif df['close'][i] < min(lines[-num_lines:]):
+                    lines.append(df['close'][i])
+                    direction = 'down'
+            else:
+                if df['close'][i] < min(lines[-num_lines:]):
+                    lines.append(df['close'][i])
+                    direction = 'down'
+                elif df['close'][i] > max(lines[-num_lines:]):
+                    lines.append(df['close'][i])
+                    direction = 'up'
+    df['line_break'] = lines + [np.nan] * (len(df) - len(lines))
+    return df
+
+def plot_line_break(df):
+    fig, ax = plt.subplots(figsize=(14, 10))
+    ax.plot(df['date'], df['line_break'], drawstyle='steps-post', label='Line Break Chart')
+    ax.set_title('Line Break Chart')
+    ax.set_ylabel('Price')
+    ax.set_xlabel('Date')
+    ax.legend()
+    plt.show()
+#6
+## error handling must be done for 'close' to 'Close', 'high' to 'High', 'low' to 'Low', 'open' to 'Open' etc

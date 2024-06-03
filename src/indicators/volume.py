@@ -424,6 +424,34 @@ def plot_vwap(df):
     ax1.legend()
 
     plt.show()
+def calculate_twiggs_money_flow(df, period):
+    df['true_high'] = df[['high', 'close']].max(axis=1)
+    df['true_low'] = df[['low', 'close']].min(axis=1)
+
+    df['mfm'] = ((df['close'] - df['true_low']) - (df['true_high'] - df['close'])) / (df['true_high'] - df['true_low'])
+    
+    # Handle division by zero (when true_high == true_low)
+    df['mfm'] = df['mfm'].replace([float('inf'), -float('inf')], 0).fillna(0)
+   
+    df['mfv'] = df['mfm'] * df['volume']
+    
+    df['tmf'] = df['mfv'].rolling(window=period).sum() / df['volume'].rolling(window=period).sum()
+    
+    return df['tmf']
+
+def plot_twiggs_money_flow(df, period=3):
+
+    df['tmf'] = calculate_twiggs_money_flow(df, period)
+
+    plt.figure(figsize=(12, 6))
+    plt.plot(df.index, df['tmf'], label='Twiggs Money Flow', color='blue')
+    plt.title('Twiggs Money Flow (TMF)')
+    plt.xlabel('Date')
+    plt.ylabel('TMF')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 
-#14, check the first few though
+
+#15, check the first few though

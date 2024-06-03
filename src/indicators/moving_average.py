@@ -182,4 +182,26 @@ def weighted_moving_average(data, window_length):
     weights = np.arange(1, window_length + 1)
     wma = np.convolve(data, weights, mode='valid') / weights.sum()
     return wma
-#19
+
+def FRAMA(close, length=14):
+    half_length = int(length / 2)
+    ema_half = ema(close, half_length)
+    ema_full = ema(close, length)
+    frama = ema_half + (0.5 * ema_half - ema_full) ** 4
+    return frama
+
+def ZLEMA(close, length):
+    half_length = int(length / 2)
+    ema_half = ema(close, half_length)
+    ema_double_half = ema(ema_half, half_length)
+    zlema = (2 * ema_half - ema_double_half) ** 2
+    return zlema
+
+def tema(df, period=20):
+    """Calculate Triple Exponential Moving Average (TEMA)."""
+    ema1 = ema(df['close'], period)
+    ema2 = ema(ema1, period)
+    ema3 = ema(ema2, period)
+    return 3 * (ema1 - ema2) + ema3
+
+#22
