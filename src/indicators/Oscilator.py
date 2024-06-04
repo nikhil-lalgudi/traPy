@@ -161,4 +161,36 @@ def plot_rvi(df):
     ax2.legend()
     plt.show()
 
-# 16
+# SMAs but can be done with  abstraction
+def smoothed_moving_average(series, period):
+    return series.ewm(span=period, adjust=False).mean()
+
+def calculate_gator_oscillator(df, jaw_period=13, teeth_period=8, lips_period=5):
+    df['jaw'] = smoothed_moving_average(df['close'], jaw_period)
+    df['teeth'] = smoothed_moving_average(df['close'], teeth_period)
+    df['lips'] = smoothed_moving_average(df['close'], lips_period)
+    df['upper_gator'] = df['jaw'] - df['teeth']
+    df['lower_gator'] = df['teeth'] - df['lips']  
+    return df
+
+def plot_gator_oscillator(df):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
+
+    ax1.plot(df['date'], df['close'], label='Close Price', color='black')
+    ax1.plot(df['date'], df['jaw'], label='Jaw (13-period SMA)', color='blue')
+    ax1.plot(df['date'], df['teeth'], label='Teeth (8-period SMA)', color='red')
+    ax1.plot(df['date'], df['lips'], label='Lips (5-period SMA)', color='green')
+    ax1.set_title('Stock Price and Alligator Indicator')
+    ax1.set_ylabel('Price')
+    ax1.legend()
+
+    ax2.bar(df['date'], df['upper_gator'], label='Upper Gator', color='blue', alpha=0.7)
+    ax2.bar(df['date'], -df['lower_gator'], label='Lower Gator', color='red', alpha=0.7)
+    ax2.set_title('Gator Oscillator')
+    ax2.set_ylabel('Gator Value')
+    ax2.set_xlabel('Date')
+    ax2.legend()
+
+    plt.show()
+
+# 17
