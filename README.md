@@ -22,6 +22,20 @@ Volume: adl, cmf, chaikin osc, pvi, nvi, eom, adl, vpt, obv, pvo, force index, m
 ## Interactive Indicators
 
 ## Advanced Statistical Methods
+### Differential Equation Solving Methods (Inspired by )
+- Discrete equations (function maps, discrete stochastic (Gillespie/Markov) simulations)
+- Ordinary differential equations (ODEs)
+- Split and Partitioned ODEs (Symplectic integrators, IMEX Methods)
+- Stochastic ordinary differential equations (SODEs or SDEs)
+- Stochastic differential-algebraic equations (SDAEs)
+- Random differential equations (RODEs or RDEs)
+- Differential algebraic equations (DAEs)
+- Delay differential equations (DDEs)
+- Neutral, retarded, and algebraic delay differential equations (NDDEs, RDDEs, and DDAEs)
+- Stochastic delay differential equations (SDDEs)
+- Experimental support for stochastic neutral, retarded, and algebraic delay differential equations (SNDDEs, SRDDEs, and SDDAEs)
+- Mixed discrete and continuous equations (Hybrid Equations, Jump Diffusions)
+- (Stochastic) partial differential equations ((S)PDEs) (with both finite difference and finite element methods)
 
 ## Getting Started
 
