@@ -2,8 +2,29 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Decorator for logging function calls
+def log_function_call(func):
+    def wrapper(*args, **kwargs):
+        print(f"Calling function '{func.__name__}' with arguments {args} and keyword arguments {kwargs}")
+        result = func(*args, **kwargs)
+        print(f"Function '{func.__name__}' completed")
+        return result
+    return wrapper
+
+# Decorator for checking required columns
+def check_columns(*required_columns):
+    def decorator(func):
+        def wrapper(df, *args, **kwargs):
+            missing_columns = [col for col in required_columns if col not in df.columns]
+            if missing_columns:
+                raise ValueError(f"Missing columns in DataFrame: {missing_columns}")
+            return func(df, *args, **kwargs)
+        return wrapper
+    return decorator
+
+@log_function_call
+@check_columns('High', 'Low', 'Close')
 def ehlers_fisher_transform(df, period=10):
-    # Calculate the median price
     df['Median Price'] = (df['High'] + df['Low']) / 2
 
     df['Fisher Transform'] = 0.0
@@ -13,16 +34,15 @@ def ehlers_fisher_transform(df, period=10):
     df['Min Low'] = df['Low'].rolling(window=period).min()
     df['Normalized Price'] = 2 * ((df['Median Price'] - df['Min Low']) / (df['Max High'] - df['Min Low']) - 0.5)
     
-    # Apply Fisher Transform
     df['Fisher Transform'] = 0.5 * np.log((1 + df['Normalized Price']) / (1 - df['Normalized Price']))
     df['Fisher Transform'] = df['Fisher Transform'].ewm(span=period, adjust=False).mean()
     
-    # Create the trigger line
     df['Trigger'] = df['Fisher Transform'].shift(1)
     return df[['Fisher Transform', 'Trigger']]
 
+@log_function_call
+@check_columns('High', 'Low', 'Close')
 def ehlers_fisher_transform_plot(df, period=10):
-
     df = ehlers_fisher_transform(df, period)
     
     fig, (ax1, ax2) = plt.subplots(2, figsize=(14, 10), sharex=True)
@@ -42,6 +62,8 @@ def ehlers_fisher_transform_plot(df, period=10):
     
     plt.show()
 
+@log_function_call
+@check_columns('Open', 'High', 'Low', 'Close')
 def heikin_ashi(df):
     ha_df = df.copy()
     ha_df['HA_Close'] = (df['Open'] + df['High'] + df['Low'] + df['Close']) / 4
@@ -53,16 +75,16 @@ def heikin_ashi(df):
     ha_df['HA_Low'] = ha_df[['HA_Open', 'HA_Close', 'Low']].min(axis=1)
     return ha_df
 
+@log_function_call
+@check_columns('Open', 'High', 'Low', 'Close')
 def heikin_ashi_plot(df):  
     ha_df = heikin_ashi(df)
     fig, (ax1, ax2) = plt.subplots(2, figsize=(14, 10), sharex=True)
-    # Plot the original price data
     ax1.plot(df.index, df['Close'], label='Close Price')
     ax1.set_title('Original Price Data')
     ax1.set_ylabel('Price')
     ax1.legend()
     ax1.grid(True)
-    # Plot the Heikin-Ashi data
     ax2.plot(ha_df.index, ha_df['HA_Close'], label='Heikin-Ashi Close', color='blue')
     ax2.plot(ha_df.index, ha_df['HA_Open'], label='Heikin-Ashi Open', color='green')
     ax2.plot(ha_df.index, ha_df['HA_High'], label='Heikin-Ashi High', color='red')
@@ -74,9 +96,9 @@ def heikin_ashi_plot(df):
     ax2.grid(True)
     
     plt.show()
-    
-#TODO - DEBUG THIS FUNCTION
 
+@log_function_call
+@check_columns('Close')
 def renko(df, brick_size):
     renko_df = pd.DataFrame(columns=['Date', 'Price', 'Brick'])
     renko_df['Date'] = df.index
@@ -112,6 +134,8 @@ def renko(df, brick_size):
     renko_df['Brick'] = renko_bricks[:len(renko_df)]
     return renko_df
 
+@log_function_call
+@check_columns('Close')
 def renko_chart(df, brick_size):
     renko_df = pd.DataFrame(columns=['Date', 'Close'])
     renko_df['Date'] = df.index
@@ -155,19 +179,19 @@ def renko_chart(df, brick_size):
     
     return renko_df
 
+@log_function_call
+@check_columns('Close')
 def renko_chart_plot(df, brick_size):
     renko_df = renko_chart(df, brick_size)
     
     fig, (ax1, ax2) = plt.subplots(2, figsize=(14, 10), sharex=True)
     
-    # Plot the original price data
     ax1.plot(df.index, df['Close'], label='Close Price')
     ax1.set_title('Original Price Data')
     ax1.set_ylabel('Price')
     ax1.legend()
     ax1.grid(True)
     
-    # Plot the Renko chart
     ax2.plot(renko_df.index, renko_df['Close'], label='Renko Close', color='blue')
     ax2.set_title('Renko Chart')
     ax2.set_xlabel('Date')
@@ -177,6 +201,8 @@ def renko_chart_plot(df, brick_size):
     
     plt.show()
 
+@log_function_call
+@check_columns('Close')
 def zigzag_indicator(df, pct_change):
     zigzag_df = pd.DataFrame(columns=['Date', 'Close', 'ZigZag'])
     zigzag_df['Date'] = df.index
@@ -211,6 +237,8 @@ def zigzag_indicator(df, pct_change):
     zigzag_df['ZigZag'] = zigzag_values
     return zigzag_df
 
+@log_function_call
+@check_columns('Close')
 def zigzag_indicator_plot(df, pct_change):
     zigzag_df = zigzag_indicator(df, pct_change) 
     fig, (ax1, ax2) = plt.subplots(2, figsize=(14, 10), sharex=True)
@@ -229,6 +257,8 @@ def zigzag_indicator_plot(df, pct_change):
     ax2.grid(True)  
     plt.show()
 
+@log_function_call
+@check_columns('close')
 def calculate_kagi(df, reversal_amount=0.04):
     kagi = []
     direction = None
@@ -252,6 +282,8 @@ def calculate_kagi(df, reversal_amount=0.04):
     df['kagi'] = kagi + [np.nan] * (len(df) - len(kagi))
     return df
 
+@log_function_call
+@check_columns('date', 'kagi')
 def plot_kagi(df):
     fig, ax = plt.subplots(figsize=(14, 10))
     ax.plot(df['date'], df['kagi'], drawstyle='steps-post', label='Kagi Chart')
@@ -261,6 +293,8 @@ def plot_kagi(df):
     ax.legend()
     plt.show()
 
+@log_function_call
+@check_columns('close')
 def calculate_line_break(df, num_lines=3):
     lines = []
     direction = None
@@ -286,6 +320,8 @@ def calculate_line_break(df, num_lines=3):
     df['line_break'] = lines + [np.nan] * (len(df) - len(lines))
     return df
 
+@log_function_call
+@check_columns('date', 'line_break')
 def plot_line_break(df):
     fig, ax = plt.subplots(figsize=(14, 10))
     ax.plot(df['date'], df['line_break'], drawstyle='steps-post', label='Line Break Chart')
@@ -294,5 +330,6 @@ def plot_line_break(df):
     ax.set_xlabel('Date')
     ax.legend()
     plt.show()
+
 #6
 ## error handling must be done for 'close' to 'Close', 'high' to 'High', 'low' to 'Low', 'open' to 'Open' etc

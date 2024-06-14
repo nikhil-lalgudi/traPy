@@ -3,6 +3,28 @@ import pandas as pd
 import matplotlib.pyplot as plt
 %matplotlib notebook
 
+# Decorator for logging function calls
+def log_function_call(func):
+    def wrapper(*args, **kwargs):
+        print(f"Calling function '{func.__name__}' with arguments {args} and keyword arguments {kwargs}")
+        result = func(*args, **kwargs)
+        print(f"Function '{func.__name__}' completed")
+        return result
+    return wrapper
+
+# Decorator for checking required columns in data
+def check_columns(*required_columns):
+    def decorator(func):
+        def wrapper(data, *args, **kwargs):
+            if isinstance(data, pd.DataFrame):
+                missing_columns = [col for col in required_columns if col not in data.columns]
+                if missing_columns:
+                    raise ValueError(f"Missing columns in DataFrame: {missing_columns}")
+            return func(data, *args, **kwargs)
+        return wrapper
+    return decorator
+
+@log_function_call
 def alma(data, window_length, sigma=6.0, offset=0.85):
     m = offset * (window_length - 1)
     s = window_length / sigma
@@ -12,12 +34,14 @@ def alma(data, window_length, sigma=6.0, offset=0.85):
     alma_values = np.convolve(data, weights[::-1], mode='valid')
     return alma_values
 
+@log_function_call
 def dema(data, window_length):
     ema1 = ema(data, window_length)
     ema2 = ema(ema1, window_length)
     dema_values = 2 * ema1 - ema2
     return dema_values
 
+@log_function_call
 def epma(data, window_length):
     alpha = 2 / (window_length + 1)
     epma_values = [np.nan] * (window_length - 1)
@@ -25,6 +49,7 @@ def epma(data, window_length):
         epma_values.append(alpha * data[i] + (1 - alpha) * epma_values[-1])
     return np.array(epma_values)
 
+@log_function_call
 def ema(data, window_length):
     alpha = 2 / (window_length + 1)
     ema_values = [np.nan] * (window_length - 1)
@@ -32,6 +57,7 @@ def ema(data, window_length):
         ema_values.append(alpha * data[i] + (1 - alpha) * ema_values[-1])
     return np.array(ema_values)
 
+@log_function_call
 def hilbert_transform_instantaneous_trendline(data, window_length):
     from scipy.signal import hilbert
     cycle = hilbert(np.array(data))
@@ -39,12 +65,14 @@ def hilbert_transform_instantaneous_trendline(data, window_length):
     instantaneous_trendline = trend[(window_length - 1):]
     return instantaneous_trendline
 
+@log_function_call
 def hull_moving_average(data, window_length):
     wma = np.convolve(data, np.ones(window_length) / window_length, mode='valid')
     wma2 = np.convolve(wma, np.ones(int(np.sqrt(window_length))) / int(np.sqrt(window_length)), mode='valid')
     hma = wma2 * 2 - wma
     return hma
 
+@log_function_call
 def kaufmans_adaptive_moving_average(data, window_length, fast_length=2, slow_length=30):
     fast_ema = ema(data, fast_length)
     slow_ema = ema(data, slow_length)
@@ -56,12 +84,14 @@ def kaufmans_adaptive_moving_average(data, window_length, fast_length=2, slow_le
         kama[i] = kama[i - 1] + sc * (data[i] - kama[i - 1])
     return kama[window_length:]
 
+@log_function_call
 def least_squares_moving_average(data, window_length):
     lsma = np.convolve(data, np.ones(window_length), mode='valid') / window_length
     weights = np.arange(1, window_length + 1)
     lsma = np.convolve(weights[::-1] * data, np.ones(window_length), mode='valid') / (np.arange(window_length, 0, -1).sum())
     return lsma
 
+@log_function_call
 def mesa_adaptive_moving_average(data, window_length, fast_limit=0.5, slow_limit=0.05):
     data = np.array(data)
     mama = np.zeros_like(data)
@@ -88,6 +118,7 @@ def mesa_adaptive_moving_average(data, window_length, fast_limit=0.5, slow_limit
         
     return mama
 
+@log_function_call
 def mcginley_dynamic(data, window_length):
     data = np.array(data)
     mcginley = np.zeros_like(data)
@@ -101,6 +132,7 @@ def mcginley_dynamic(data, window_length):
         
     return mcginley
 
+@log_function_call
 def modified_moving_average(data, window_length):
     data = np.array(data)
     mma = np.zeros_like(data)
@@ -117,6 +149,7 @@ def modified_moving_average(data, window_length):
         
     return mma
 
+@log_function_call
 def running_moving_average(data, window_length):
     data = np.array(data)
     rma = np.zeros_like(data)
@@ -128,11 +161,13 @@ def running_moving_average(data, window_length):
         
     return rma
 
+@log_function_call
 def simple_moving_average(data, window_length):
     data = np.array(data)
     sma = np.convolve(data, np.ones(window_length) / window_length, mode='valid')
     return sma
 
+@log_function_call
 def smoothed_moving_average(data, window_length, smoothing_factor=2):
     data = np.array(data)
     smma = np.zeros_like(data)
@@ -144,6 +179,7 @@ def smoothed_moving_average(data, window_length, smoothing_factor=2):
         
     return smma
 
+@log_function_call
 def tillson_t3_moving_average(data, window_length):
     data = np.array(data)
     t3 = np.zeros_like(data)
@@ -157,6 +193,7 @@ def tillson_t3_moving_average(data, window_length):
         
     return t3
 
+@log_function_call
 def triple_exponential_moving_average(data, window_length):
     data = np.array(data)
     ema1 = ema(data, window_length)
@@ -165,24 +202,30 @@ def triple_exponential_moving_average(data, window_length):
     tema = 3 * ema1 - 3 * ema2 + ema3
     return tema
 
+@log_function_call
+@check_columns('Close')
 def volume_weighted_average_price(data, volume):
     data = np.array(data)
     volume = np.array(volume)
     vwap = np.cumsum(data * volume) / np.cumsum(volume)
     return vwap
 
+@log_function_call
+@check_columns('Close')
 def volume_weighted_moving_average(data, volume, window_length):
     data = np.array(data)
     volume = np.array(volume)
     vwma = np.convolve(data * volume, np.ones(window_length), mode='valid')/ np.convolve(volume, np.ones(window_length), mode='valid')
     return vwma
 
+@log_function_call
 def weighted_moving_average(data, window_length):
     data = np.array(data)
     weights = np.arange(1, window_length + 1)
     wma = np.convolve(data, weights, mode='valid') / weights.sum()
     return wma
 
+@log_function_call
 def FRAMA(close, length=14):
     half_length = int(length / 2)
     ema_half = ema(close, half_length)
@@ -190,6 +233,7 @@ def FRAMA(close, length=14):
     frama = ema_half + (0.5 * ema_half - ema_full) ** 4
     return frama
 
+@log_function_call
 def ZLEMA(close, length):
     half_length = int(length / 2)
     ema_half = ema(close, half_length)
@@ -197,11 +241,14 @@ def ZLEMA(close, length):
     zlema = (2 * ema_half - ema_double_half) ** 2
     return zlema
 
+@log_function_call
+@check_columns('close')
 def tema(df, period=20):
     """Calculate Triple Exponential Moving Average (TEMA)."""
     ema1 = ema(df['close'], period)
     ema2 = ema(ema1, period)
     ema3 = ema(ema2, period)
     return 3 * (ema1 - ema2) + ema3
+
 
 #22
