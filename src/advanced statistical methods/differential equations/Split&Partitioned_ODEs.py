@@ -49,3 +49,6 @@ def H(q, p):
 def G(q, p):
     """Gradient part of the system."""
     return np.sin(q)
+
+
+add the example usage

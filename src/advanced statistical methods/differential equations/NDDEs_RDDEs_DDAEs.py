@@ -42,7 +42,7 @@ class DelayDE:
             self.t += self.dt
             self.history.append((self.t, self.y))
         return self.y
-
+"""
 # Example usage within a library
 def example_usage():
     # Define deterministic parts of the equation
@@ -82,3 +82,4 @@ def example_usage():
 def get_integration_results():
     results = example_usage()
     return results
+"""

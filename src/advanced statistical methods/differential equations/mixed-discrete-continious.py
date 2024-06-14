@@ -193,3 +193,95 @@ if __name__ == "__main__":
     # Plot results
     plot_jump_diffusion_solution(processed_time, processed_trajectory)
 
+class HybridAutomaton:
+    def __init__(self, f1, f2, switch_condition, y0, mode0, t0, t1, dt):
+        self.f1 = f1  # Continuous part for mode 1
+        self.f2 = f2  # Continuous part for mode 2
+        self.switch_condition = switch_condition  # Condition for switching modes
+        self.y = y0
+        self.mode = mode0
+        self.t = t0
+        self.t1 = t1
+        self.dt = dt
+        self.steps = int((t1 - t0) / dt)
+        self.trajectory = [y0]
+        self.mode_trajectory = [mode0]
+        self.time = [t0]
+    
+    @step
+    def euler_step(self, y, f, dt):
+        return y + f(y) * dt
+    
+    def solve(self):
+        for _ in range(self.steps):
+            if self.switch_condition(self.y, self.t, self.mode):
+                self.mode = 1 if self.mode == 2 else 2  # Toggle mode between 1 and 2
+            f = self.f1 if self.mode == 1 else self.f2
+            self.y = self.euler_step(self.y, f, self.dt)
+            self.t += self.dt
+            self.trajectory.append(self.y)
+            self.mode_trajectory.append(self.mode)
+            self.time.append(self.t)
+        return np.array(self.time), np.array(self.trajectory), np.array(self.mode_trajectory)
+
+# Example usage within a library
+def example_usage():
+    # Define continuous parts for mode 1 and mode 2
+    def f1(y):
+        return np.array([-0.5 * y[0], 0.5 * y[1]])
+    
+    def f2(y):
+        return np.array([0.5 * y[0], -0.5 * y[1]])
+    
+    def switch_condition(y, t, mode):
+        return t % 5 < 1e-2  # Switch modes every 5 time units
+    
+    # Initial conditions
+    y0 = np.array([1.0, 1.0])
+    mode0 = 1
+    t0 = 0.0
+    t1 = 20.0
+    dt = 0.01
+    
+    # Create Hybrid Automaton solver
+    hybrid_automaton_solver = HybridAutomaton(f1, f2, switch_condition, y0, mode0, t0, t1, dt)
+    
+    # Solve Hybrid Automaton
+    time, trajectory, mode_trajectory = hybrid_automaton_solver.solve()
+    
+    return time, trajectory, mode_trajectory
+
+# Functions to process and visualize the results
+def process_hybrid_automaton_solution(time, trajectory, mode_trajectory):
+    # Basic statistics or analysis can be added here
+    return time, trajectory, mode_trajectory
+
+def plot_hybrid_automaton_solution(time, trajectory, mode_trajectory):
+    plt.figure()
+    plt.subplot(2, 1, 1)
+    plt.plot(time, trajectory)
+    plt.title('Hybrid Automaton Solution')
+    plt.xlabel('Time')
+    plt.ylabel('State')
+    plt.legend(['y1', 'y2'])
+    plt.grid(True)
+    
+    plt.subplot(2, 1, 2)
+    plt.step(time, mode_trajectory, where='post')
+    plt.title('Mode Trajectory')
+    plt.xlabel('Time')
+    plt.ylabel('Mode')
+    plt.grid(True)
+    
+    plt.tight_layout()
+    plt.show()
+
+# Example usage
+if __name__ == "__main__":
+    time, trajectory, mode_trajectory = example_usage()
+    
+    # Process results
+    processed_time, processed_trajectory, processed_mode_trajectory = process_hybrid_automaton_solution(time, trajectory, mode_trajectory)
+    
+    # Plot results
+    plot_hybrid_automaton_solution(processed_time, processed_trajectory, processed_mode_trajectory)
