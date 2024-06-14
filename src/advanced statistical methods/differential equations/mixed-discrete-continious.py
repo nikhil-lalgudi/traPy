@@ -142,7 +142,7 @@ class JumpDiffusion:
         return np.array(self.time), np.array(self.trajectory)
 
 # Example usage within a library
-def example_usage():
+def jump_usage():
     # Define continuous, stochastic parts, and jump size function
     def f(y):
         return np.array([0.05 * y[0]])
@@ -185,7 +185,7 @@ def plot_jump_diffusion_solution(time, trajectory):
 
 # Example usage
 if __name__ == "__main__":
-    time, trajectory = example_usage()
+    time, trajectory = jump_usage()
     
     # Process results
     processed_time, processed_trajectory = process_jump_diffusion_solution(time, trajectory)
@@ -225,7 +225,7 @@ class HybridAutomaton:
         return np.array(self.time), np.array(self.trajectory), np.array(self.mode_trajectory)
 
 # Example usage within a library
-def example_usage():
+def hybrid_usage():
     # Define continuous parts for mode 1 and mode 2
     def f1(y):
         return np.array([-0.5 * y[0], 0.5 * y[1]])
@@ -278,7 +278,7 @@ def plot_hybrid_automaton_solution(time, trajectory, mode_trajectory):
 
 # Example usage
 if __name__ == "__main__":
-    time, trajectory, mode_trajectory = example_usage()
+    time, trajectory, mode_trajectory = hybrid_usage()
     
     # Process results
     processed_time, processed_trajectory, processed_mode_trajectory = process_hybrid_automaton_solution(time, trajectory, mode_trajectory)
