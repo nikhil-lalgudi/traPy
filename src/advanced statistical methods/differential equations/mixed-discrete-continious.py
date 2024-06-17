@@ -285,3 +285,55 @@ if __name__ == "__main__":
     
     # Plot results
     plot_hybrid_automaton_solution(processed_time, processed_trajectory, processed_mode_trajectory)
+
+class PDMP:
+    def __init__(self, initial_state, velocities, switching_rate):
+        self.state = initial_state
+        self.velocities = velocities
+        self.switching_rate = switching_rate
+        self.current_velocity = np.random.choice(velocities)
+        
+    def deterministic_step(self, dt):
+        """Update the state deterministically."""
+        self.state += self.current_velocity * dt
+    
+    def stochastic_jump(self):
+        """Determine if a jump occurs and update the velocity."""
+        if np.random.rand() < self.switching_rate:
+            self.current_velocity = np.random.choice(self.velocities)
+    
+    def simulate(self, T, dt):
+        """Simulate the PDMP for time T with step size dt."""
+        times = np.arange(0, T, dt)
+        states = []
+        for t in times:
+            self.deterministic_step(dt)
+            self.stochastic_jump()
+            states.append(self.state.copy())
+        return times, states
+
+    def plot_pdmp(self, times, states):
+        """Plot the results of the PDMP simulation."""
+        states = np.array(states)
+        plt.plot(times, states)
+        plt.xlabel('Time')
+        plt.ylabel('State')
+        plt.title('PDMP Simulation')
+        plt.show()
+
+"""Ex:
+initial_state = np.array([0.0])  # Starting at origin
+velocities = [1.0, -1.0]  # Possible velocities
+switching_rate = 0.1  # Rate of switching
+
+# Create PDMP instance
+pdmp = PDMP(initial_state, velocities, switching_rate)
+
+# Simulate PDMP
+T = 10  # Total time
+dt = 0.01  # Time step
+times, states = pdmp.simulate(T, dt)
+
+# Plot results
+pdmp.plot_pdmp(times, states)
+"""

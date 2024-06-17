@@ -152,3 +152,95 @@ if __name__ == "__main__":
     plot_pde_solution(processed_fdm_solution, L, T)
     plot_pde_solution(processed_fem_solution, L, T)
     plot_pde_solution(processed_spde_solution, L, T)
+
+
+class SpectralMethods:
+    def __init__(self, L, N, alpha):
+        """
+        Initialize the spectral method solver.
+        
+        Parameters:
+        L (float): Domain length.
+        N (int): Number of spatial points.
+        alpha (float): Diffusion coefficient.
+        """
+        self.L = L
+        self.N = N
+        self.alpha = alpha
+        self.x = np.linspace(0, L, N, endpoint=False)
+        self.k = np.fft.fftfreq(N, d=L/N) * 2 * np.pi  # Wavenumbers
+
+    def initialize_condition(self, initial_func):
+        """
+        Set the initial condition.
+        
+        Parameters:
+        initial_func (callable): Function to generate initial condition.
+        """
+        self.u0 = initial_func(self.x)
+        self.u_hat = fft(self.u0)
+
+    def solve_heat_equation(self, T, dt):
+        """
+        Solve the heat equation using the Fourier spectral method.
+        
+        Parameters:
+        T (float): Total time.
+        dt (float): Time step.
+        
+        Returns:
+        times (ndarray): Array of time points.
+        u_solution (ndarray): Array of solution values at each time point.
+        """
+        t = 0
+        u_hat_solution = [self.u_hat]
+        while t < T:
+            self.u_hat = self.u_hat * np.exp(-self.alpha * self.k**2 * dt)
+            u_hat_solution.append(self.u_hat)
+            t += dt
+
+        u_solution = [np.real(ifft(u_hat)) for u_hat in u_hat_solution]
+        times = np.arange(0, T + dt, dt)
+        return times, np.array(u_solution)
+
+    def plot_solution(self, times, u_solution, num_plots=10):
+        """
+        Plot the solution of the PDE at different time points.
+        
+        Parameters:
+        times (ndarray): Array of time points.
+        u_solution (ndarray): Array of solution values at each time point.
+        num_plots (int): Number of time points to plot.
+        """
+        plt.figure(figsize=(8, 6))
+        plot_indices = np.linspace(0, len(times) - 1, num_plots, dtype=int)
+        for i in plot_indices:
+            plt.plot(self.x, u_solution[i], label=f'Time = {times[i]:.2f}')
+        plt.xlabel('x')
+        plt.ylabel('u')
+        plt.legend()
+        plt.title('Heat Equation Solution Using Fourier Spectral Method')
+        plt.show()
+"""
+# Example usage of the SpectralMethods library
+if __name__ == "__main__":
+    L = 2 * np.pi  # Domain length
+    N = 256  # Number of spatial points
+    alpha = 0.02  # Diffusion coefficient
+    T = 1.0  # Total time
+    dt = 0.001  # Time step
+
+    # Define initial condition function (Gaussian)
+    def initial_condition(x):
+        return np.exp(-100 * (x - L/2)**2)
+
+    # Create SpectralMethods instance
+    spectral_solver = SpectralMethods(L, N, alpha)
+    spectral_solver.initialize_condition(initial_condition)
+
+    # Solve the heat equation
+    times, u_solution = spectral_solver.solve_heat_equation(T, dt)
+
+    # Plot the solution
+    spectral_solver.plot_solution(times, u_solution)
+"""
