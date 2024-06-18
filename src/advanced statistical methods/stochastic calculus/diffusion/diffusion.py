@@ -1,13 +1,8 @@
 import numpy as np
 from error_handler import check_numeric, check_positive_integer, check_numeric_or_single_arg_callable, ensure_single_arg_constant_function
 
-class GaussianNoise:
-    def __init__(self, t=1, rng=None):
-        self.t = t
-        self.rng = rng or np.random.default_rng()
-    
-    def _sample_gaussian_noise(self, n):
-        return self.rng.normal(0, np.sqrt(self.t / n), n)
+from Gaussian import GaussianNoise  
+from base import BaseTimeProcess
 
 class DiffusionProcess(GaussianNoise):
     def __init__(self, speed=1, mean=0, vol=1, volexp=0, t=1, rng=None):
