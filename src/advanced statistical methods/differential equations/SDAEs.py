@@ -74,6 +74,71 @@ def process_sdae_solution(time, trajectory_y, trajectory_z):
     # Basic statistics or analysis can be added here
     return time, trajectory_y, trajectory_z
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+def stratonovich_integral(f, t, W):
+    n = len(t)
+    if len(W) != n:
+        raise ValueError("Time points and Wiener process must have the same length.")
+    
+    # Initialize the integral array
+    integral = np.zeros(n)
+    
+    # Midpoint approximation for the Stratonovich integral
+    for i in range(1, n):
+        delta_t = t[i] - t[i-1]
+        delta_W = W[i] - W[i-1]
+        midpoint_W = 0.5 * (W[i] + W[i-1])
+        integral[i] = integral[i-1] + f(midpoint_W) * delta_W
+    
+    return integral
+
+# Example usage
+np.random.seed(42)  # For reproducibility
+n_steps = 1000
+T = 1.0
+t = np.linspace(0, T, n_steps + 1)
+delta_t = T / n_steps
+W = np.cumsum(np.sqrt(delta_t) * np.random.randn(n_steps + 1))
+
+# Define the function to integrate
+def f(W):
+    return W**2
+
+# Compute the Stratonovich integral
+integral = stratonovich_integral(f, t, W)
+
+# Plotting the results
+plt.figure(figsize=(12, 8))
+
+# Plot the Wiener process
+plt.subplot(3, 1, 1)
+plt.plot(t, W, label='Wiener Process $W(t)$')
+plt.title('Wiener Process')
+plt.xlabel('Time $t$')
+plt.ylabel('$W(t)$')
+plt.legend()
+
+# Plot the function f(W(t))
+plt.subplot(3, 1, 2)
+plt.plot(t, f(W), label='$f(W(t)) = W(t)^2$', color='orange')
+plt.title('Function $f(W(t))$')
+plt.xlabel('Time $t$')
+plt.ylabel('$f(W(t))$')
+plt.legend()
+
+# Plot the Stratonovich integral
+plt.subplot(3, 1, 3)
+plt.plot(t, integral, label='Stratonovich Integral', color='green')
+plt.title('Stratonovich Integral')
+plt.xlabel('Time $t$')
+plt.ylabel('Integral')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
 def plot_sdae_solution(time, trajectory_y, trajectory_z):
     plt.figure()
     plt.subplot(2, 1, 1)
