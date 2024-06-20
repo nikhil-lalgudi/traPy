@@ -1,11 +1,21 @@
 import numpy as np
 
+def log_function_call(func):
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__} with args: {args} and kwargs: {kwargs}")
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} returned {result}")
+        return result
+    return wrapper
+
+@log_function_call
 def awesome_oscillator(data, short_window=5, long_window=34):
     sma_short = np.convolve(data, np.ones(short_window) / short_window, mode='valid')
     sma_long = np.convolve(data, np.ones(long_window) / long_window, mode='valid')
     ao = sma_short - sma_long
     return ao
 
+@log_function_call
 def chande_momentum_oscillator(data, window_length=20):
     data = np.array(data)
     gain = np.sum(np.maximum(0, data[window_length:] - data[:-window_length]))
@@ -13,6 +23,7 @@ def chande_momentum_oscillator(data, window_length=20):
     cmo = 100 * (gain - loss) / (gain + loss)
     return cmo
 
+@log_function_call
 def commodity_channel_index(data, window_length=20):
     data = np.array(data)
     typical_price = (data['High'] + data['Low'] + data['Close']) / 3
@@ -21,6 +32,7 @@ def commodity_channel_index(data, window_length=20):
     cci = (typical_price[window_length:] - sma) / (0.015 * mad)
     return cci
 
+@log_function_call
 def connors_rsi(data, window_length=3, rsi_length=2):
     data = np.array(data)
     rsi = relative_strength_index(data, rsi_length)
@@ -32,12 +44,14 @@ def connors_rsi(data, window_length=3, rsi_length=2):
         connors_rsi[i] = 100 * (1 + up / (1 - down))
     return connors_rsi
 
+@log_function_call
 def detrended_price_oscillator(data, window_length=20):
     data = np.array(data)
     sma = np.convolve(data, np.ones(window_length) / window_length, mode='valid')
     dpo = data[window_length:] - sma
     return dpo
 
+@log_function_call
 def kdj_index(data, k_window=9, d_window=3):
     data = np.array(data)
     high_low_range = data['High'].rolling(k_window).max() - data['Low'].rolling(k_window).min()
@@ -46,24 +60,24 @@ def kdj_index(data, k_window=9, d_window=3):
     j = 3 * d - 2 * k
     return k, d, j
 
+@log_function_call
 def RSI(data, period = 14, column = 'Close'):
-         delta = data[column].diff(1)
-         delta = delta[1:]
-         up = delta.copy()
-         down = delta.copy()
-         up[up <0] = 0
-         down[down >0] = 0
-         data['up'] = up
-         data['down'] = down
-         AVG_Gain = SMA(data, period, column = 'up')
-         AVG_Loss = abs(SMA(data, period, column = 'down'))
-         RS = AVG_Gain / AVG_Loss
-         RSI = 100.0 - (100.0/(1.0+RS))
-         
-         data['RSI'] = RSI
-         
-         return data
+    delta = data[column].diff(1)
+    delta = delta[1:]
+    up = delta.copy()
+    down = delta.copy()
+    up[up <0] = 0
+    down[down >0] = 0
+    data['up'] = up
+    data['down'] = down
+    AVG_Gain = SMA(data, period, column = 'up')
+    AVG_Loss = abs(SMA(data, period, column = 'down'))
+    RS = AVG_Gain / AVG_Loss
+    RSI = 100.0 - (100.0/(1.0+RS))
+    data['RSI'] = RSI
+    return data
 
+@log_function_call
 def schaff_trend_cycle(data, window_length=23, cycle_length=10):
     data = np.array(data)
     ema1 = data['Close'].ewm(span=window_length, adjust=False).mean()
@@ -71,6 +85,7 @@ def schaff_trend_cycle(data, window_length=23, cycle_length=10):
     schaff_trend_cycle = 100 * (ema1 - ema2) / ema2
     return schaff_trend_cycle
 
+@log_function_call
 def stochastic_momentum_index(data, window_length=14, k_window=3, d_window=3):
     high_low_range = data['High'].rolling(window_length).max() - data['Low'].rolling(window_length).min()
     stochastic = (data['Close'] - data['Low'].rolling(window_length).min()) / (high_low_range + 1e-10)
@@ -79,18 +94,21 @@ def stochastic_momentum_index(data, window_length=14, k_window=3, d_window=3):
     smi = (k + d) / 2
     return k, d, smi
 
+@log_function_call
 def stochastic_oscillator(data, k_window=14, d_window=3):
     high_low_range = data['High'].rolling(k_window).max() - data['Low'].rolling(k_window).min()
     k = 100 * (data['Close'] - data['Low'].rolling(k_window).min()) / (high_low_range + 1e-10)
     d = k.rolling(d_window).mean()
     return k, d
 
+@log_function_call
 def stochastic_rsi(data, window_length=14, k_window=3, d_window=3):
     rsi = relative_strength_index(data, window_length)
     k = rsi.rolling(k_window).mean()
     d = k.rolling(d_window).mean()
     return k, d
 
+@log_function_call
 def triple_ema_oscillator(data, window_length=9):
     ema1 = data['Close'].ewm(span=window_length, adjust=False).mean()
     ema2 = ema1.ewm(span=window_length, adjust=False).mean()
@@ -98,6 +116,7 @@ def triple_ema_oscillator(data, window_length=9):
     trix = ema3.pct_change(periods=1)
     return trix
 
+@log_function_call
 def ultimate_oscillator(data, window1=7, window2=14, window3=28):
     bp = data['Close'] - np.minimum(data['Low'].rolling(window1).min(), data['Low'].rolling(window1).min().shift(1))
     tr = np.maximum(data['High'], data['Close'].shift(1)) - np.minimum(data['Low'], data['Close'].shift(1))
@@ -107,37 +126,39 @@ def ultimate_oscillator(data, window1=7, window2=14, window3=28):
     ultimate_oscillator = 100 * (4 * avg_bp3 + 2 * avg_bp2 + avg_bp) / (4 + 2 + 1)
     return ultimate_oscillator
 
+@log_function_call
 def williams_r(data, window_length=14):
     high_low_range = data['High'].rolling(window_length).max() - data['Low'].rolling(window_length).min()
     williams_r = -100 * (data['High'] - data['Close']) / (high_low_range + 1e-10)
     return williams_r
 
+@log_function_call
 def calculate_ema(series, period):
     return series.ewm(span=period, adjust=False).mean()
 
+@log_function_call
 def calculate_eri(df, period=13):
     df['ema'] = calculate_ema(df['close'], period)
     df['bull_power'] = df['high'] - df['ema']
     df['bear_power'] = df['low'] - df['ema']
     return df
 
+@log_function_call
 def plot_eri(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
-
     ax1.plot(df['date'], df['close'], label='Close Price')
     ax1.set_title('Stock Price')
     ax1.set_ylabel('Price')
     ax1.legend()
-
     ax2.plot(df['date'], df['bull_power'], label='Bull Power', color='green')
     ax2.plot(df['date'], df['bear_power'], label='Bear Power', color='red')
     ax2.set_title('Elder-Ray Index')
     ax2.set_ylabel('Elder-Ray Index')
     ax2.set_xlabel('Date')
     ax2.legend()
-
     plt.show()
 
+@log_function_call
 def calculate_rvi(df, period=10):
     df['close_open'] = df['close'] - df['open']
     df['high_low'] = df['high'] - df['low']
@@ -147,6 +168,7 @@ def calculate_rvi(df, period=10):
     df['rvi_signal'] = df['rvi'].rolling(window=4).mean()
     return df
 
+@log_function_call
 def plot_rvi(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
     ax1.plot(df['date'], df['close'], label='Close Price')
@@ -161,10 +183,11 @@ def plot_rvi(df):
     ax2.legend()
     plt.show()
 
-# SMAs but can be done with  abstraction
+@log_function_call
 def smoothed_moving_average(series, period):
     return series.ewm(span=period, adjust=False).mean()
 
+@log_function_call
 def calculate_gator_oscillator(df, jaw_period=13, teeth_period=8, lips_period=5):
     df['jaw'] = smoothed_moving_average(df['close'], jaw_period)
     df['teeth'] = smoothed_moving_average(df['close'], teeth_period)
@@ -173,9 +196,9 @@ def calculate_gator_oscillator(df, jaw_period=13, teeth_period=8, lips_period=5)
     df['lower_gator'] = df['teeth'] - df['lips']  
     return df
 
+@log_function_call
 def plot_gator_oscillator(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
-
     ax1.plot(df['date'], df['close'], label='Close Price', color='black')
     ax1.plot(df['date'], df['jaw'], label='Jaw (13-period SMA)', color='blue')
     ax1.plot(df['date'], df['teeth'], label='Teeth (8-period SMA)', color='red')
@@ -183,14 +206,12 @@ def plot_gator_oscillator(df):
     ax1.set_title('Stock Price and Alligator Indicator')
     ax1.set_ylabel('Price')
     ax1.legend()
-
     ax2.bar(df['date'], df['upper_gator'], label='Upper Gator', color='blue', alpha=0.7)
     ax2.bar(df['date'], -df['lower_gator'], label='Lower Gator', color='red', alpha=0.7)
     ax2.set_title('Gator Oscillator')
     ax2.set_ylabel('Gator Value')
     ax2.set_xlabel('Date')
     ax2.legend()
-
     plt.show()
 
 # 17

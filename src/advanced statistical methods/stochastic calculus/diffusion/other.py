@@ -110,3 +110,28 @@ class MertonJumpDiffusionModel(BaseProcess):
             s[i] = s[i-1] * np.exp((self.mu - 0.5 * self.sigma**2) * dt + self.sigma * np.sqrt(dt) * z +
                                    poi * (self.m + self.v * self.rng.normal()))
         return s
+
+class KouJumpDiffusionModel(BaseProcess):
+    def __init__(self, s0, mu, sigma, lam, p, eta1, eta2, t, rng=None):
+        super().__init__(rng=rng)
+        self.s0 = s0
+        self.mu = mu
+        self.sigma = sigma
+        self.lam = lam
+        self.p = p
+        self.eta1 = eta1
+        self.eta2 = eta2
+        self.t = t
+
+    def sample(self, n):
+        dt = self.t / n
+        s = np.zeros(n + 1)
+        s[0] = self.s0
+        for i in range(1, n + 1):
+            z = self.rng.normal()
+            poi = self.rng.poisson(self.lam * dt)
+            jumps = np.sum(np.where(self.rng.random(poi) < self.p,
+                                    self.rng.exponential(scale=1/self.eta1, size=poi),
+                                    -self.rng.exponential(scale=1/self.eta2, size=poi)))
+            s[i] = s[i-1] * np.exp((self.mu - 0.5 * self.sigma**2) * dt + self.sigma * np.sqrt(dt) * z + jumps)
+        return s

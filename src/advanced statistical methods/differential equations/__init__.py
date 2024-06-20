@@ -1,3 +1,3 @@
 import numpy
 import math
-import matplotlib
+import matplotlib.pyplot
