@@ -5,6 +5,8 @@ from enum import Enum
 
 import time
 from functools import wraps
+from moving_average import smoothed_moving_average
+from Price_characteristics import true_range, average_true_range
 
 def timing_decorator(func):
     @wraps(func)
@@ -124,13 +126,9 @@ def plot_fractals(df):
     ax.legend()
     plt.show()
 
-def calculate_atr(df, period=14):
-    df['tr'] = df[['high', 'low', 'close']].apply(lambda x: max(x[0] - x[1], abs(x[0] - x[2]), abs(x[1] - x[2])), axis=1)
-    df['atr'] = df['tr'].rolling(window=period).mean()
-    return df
 
 def get_atr_stop(df, lookback_periods=21, multiplier=3, end_type=EndType.CLOSE):
-    df = calculate_atr(df, period=lookback_periods)
+    df = average_true_range(df, period=lookback_periods)
     
     if end_type == EndType.CLOSE:
         df['atr_stop_long'] = df['close'] - (df['atr'] * multiplier)
@@ -175,11 +173,6 @@ def plot_aroon(df):
 
     plt.show()
 
-# helper or just import from another file for far more efficient Abstraction
-def calculate_tr(df):
-    df['tr'] = df[['high', 'low', 'close']].apply(lambda x: max(x[0] - x[1], abs(x[0] - x[2]), abs(x[1] - x[2])), axis=1)
-    return df
-
 # helper
 def calculate_dm(df):
     df['plus_dm'] = np.where((df['high'] - df['high'].shift(1)) > (df['low'].shift(1) - df['low']), df['high'] - df['high'].shift(1), 0)
@@ -189,7 +182,7 @@ def calculate_dm(df):
     return df
 
 def get_adx(df, lookback_periods=14):
-    df = calculate_tr(df)
+    df = true_range(df)
     df = calculate_dm(df)
     df['atr'] = df['tr'].rolling(window=lookback_periods).mean()
     df['plus_di'] = 100 * (df['plus_dm'].rolling(window=lookback_periods).mean() / df['atr'])
@@ -293,11 +286,6 @@ def plot_supertrend(df):
     
     plt.show()
 
-## for later use abtraction
-
-def smoothed_moving_average(series, period, shift):
-    sma = series.ewm(span=period, adjust=False).mean()
-    return sma.shift(shift)
 
 def calculate_alligator(df):
     df['jaw'] = smoothed_moving_average(df['close'], 13, 8)
