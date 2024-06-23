@@ -21,25 +21,108 @@ Volume: adl, cmf, chaikin osc, pvi, nvi, eom, adl, vpt, obv, pvo, force index, m
 ## Interactive Indicators
 
 ## Advanced Statistical Methods
-### Differential Equation Solving Methods
+### Solvers of different differential equations with GPU support and efficient backpropagation with PyTorch
+
+#### Delay Differential Equations:
+- Differential algebraic equations (DAEs)
+
+#### Differential algebraic equations:
+- Delay differential equations (DDEs)
+
+#### Discrete Equations:
 - Discrete equations (function maps, discrete stochastic (Gillespie/Markov) simulations)
+
+#### Mixed discrete and continuous equations:
+- Mixed discrete and continuous equations (Hybrid Equations, Jump Diffusions)
+
+#### Neutral, retarded, and algebraic delay differential equations: 
+- Neutral, retarded, and algebraic delay differential equations (NDDEs, RDDEs, and DDAEs)
+
+#### Ordinary Differential Equations:
 - Ordinary differential equations (ODEs)
 - Split and Partitioned ODEs (Symplectic integrators, IMEX Methods)
+
+#### Random Differential Equations:
+- Random differential equations (RODEs or RDEs)
+
+#### Stochastic Differential Equations:
+- (Stochastic) partial differential equations ((S)PDEs) (with both finite difference and finite element methods)
+- Stochastic delay differential equations (SDDEs)
 - Stochastic ordinary differential equations (SODEs or SDEs)
 - Stochastic differential-algebraic equations (SDAEs)
-- Random differential equations (RODEs or RDEs)
-- Differential algebraic equations (DAEs)
-- Delay differential equations (DDEs)
-- Neutral, retarded, and algebraic delay differential equations (NDDEs, RDDEs, and DDAEs)
-- Stochastic delay differential equations (SDDEs)
 - Experimental support for stochastic neutral, retarded, and algebraic delay differential equations (SNDDEs, SRDDEs, and SDDAEs)
-- Mixed discrete and continuous equations (Hybrid Equations, Jump Diffusions)
-- (Stochastic) partial differential equations ((S)PDEs) (with both finite difference and finite element methods)
+
+#### Integro-Differential Equations: 
+Include solvers for equations involving both integrals and derivatives.
+
+#### Fractional Differential Equations: 
+Support for equations involving fractional derivatives, which are useful in various fields such as viscoelasticity and anomalous diffusion.
+
+#### Hamiltonian Systems
+Specialized solvers for systems governed by Hamiltonian mechanics.
+
+#### Reaction-Diffusion Systems: 
+Efficient solvers for modeling chemical reactions and biological processes.
 
 ### Stochastic Realizations
+#### Continous Processes
+- Bessel
+- Brownian Bridge
+- Brownian Excursion
+- Brownian Meander
+- Brownian Motion
+- Cauchy
+- Fractional Brownian Motion
+- Gamma
+- Geometric Brownian Motion
+- Hyperbolic Brownian Motion
+- Inverse Gaussian 
+- Lévy Flight
+- Lévy Process
+- Martingale
+- Mixed Poisson
+- Multifractional Brownian Motion
+- Normal Inverse Gaussian
+- Poisson
+- Stable Processes
+- Squared Bessel
+- Variance Gamma
+- Wiener
+
+#### Diffusion Processes
+- Constant Elasticity Variance
+- Cox Ingersoll Ross
+- Diffusion
+- Extended Vasicek
+- Multifactor Vasicek
+- Vasicek
+- Ornstein Ulhenbeck
+- Mean-Reverting 
+
+#### Discrete Processes
+- Bernoulli 
+- Chinese Restaurant
+- Dirichlet 
+- Galton-Watson
+- Markov
+- Moran
+- Markov Chain Monte Carlo
+- Random Walk
+- Renewal Proces
+- Yule Process
+
+#### Noise
+- Alpha-Stable Noise
+- Colored Noise
+- Fractional Gaussian
+- Gaussian Noise
 
 
 ### Numerical Financial Methods
+- Black Scholes Numerical Methods
+- Monte Carlo Methods
+- Quasi Monte Carlo Methods
+- FFT Methods
 
 
 ## Getting Started

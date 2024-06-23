@@ -5,7 +5,7 @@ import setuptools
 
 
 here = os.path.realpath(os.path.dirname(__file__))
-with open(os.path.join(here, 'torchsde', '__init__.py')) as f:
+with open(os.path.join(here, 'traPy', '__init__.py')) as f:
     meta_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", f.read(), re.M)
     if meta_match:
         version = meta_match.group(1)
