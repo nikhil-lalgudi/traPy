@@ -2,17 +2,15 @@ import numpy as np
 import scipy.stats as st
 import scipy.sparse as sp
 import scipy.sparse.linalg as splinalg
-import time
-import functools
-import logging
 
-from diffusion import Diffusion
+
+from diffusion import Diffusion ## debug NEEDED
 from config import log_execution, measure_time
 
 
 import matplotlib.pyplot as plt
 
-% matplotlib inline
+%matplotlib inline
 
 class BlackScholesNumericalMethods:
     def __init__(self, seed=None):

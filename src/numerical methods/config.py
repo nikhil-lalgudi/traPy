@@ -1,3 +1,5 @@
+# Decorator definitions
+
 import time
 import functools
 import logging
