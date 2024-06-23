@@ -8,7 +8,6 @@ Repo is open source and contains most well known technical indicators for techni
 
 # Core Features
 ## Indicators
-90 so far:
 *Graph-trends*: Bollinger Bands, Donchian Channels, fractal chaos bands, keltner channels, moving average envelopes, starc bands, price channels, pivot points, rolling pivot points, standard deviation channels, Ichimoku Cloud, Parabolic SAR
 
 *Moving averages*: alma, dema, epma, ema, hilbert transform instantaneous trendline, hull moving average, Kama, lsma, mesa adaptive moving average, mcginley dynamic, modified moving average, running moving average, simple moving average, smoothed moving average, tillson t3 moving average, tema, vwap, vwma, wma, frama, zlema, tema
@@ -22,7 +21,7 @@ Volume: adl, cmf, chaikin osc, pvi, nvi, eom, adl, vpt, obv, pvo, force index, m
 ## Interactive Indicators
 
 ## Advanced Statistical Methods
-### Differential Equation Solving Methods (Inspired by )
+### Differential Equation Solving Methods
 - Discrete equations (function maps, discrete stochastic (Gillespie/Markov) simulations)
 - Ordinary differential equations (ODEs)
 - Split and Partitioned ODEs (Symplectic integrators, IMEX Methods)
@@ -36,6 +35,12 @@ Volume: adl, cmf, chaikin osc, pvi, nvi, eom, adl, vpt, obv, pvo, force index, m
 - Experimental support for stochastic neutral, retarded, and algebraic delay differential equations (SNDDEs, SRDDEs, and SDDAEs)
 - Mixed discrete and continuous equations (Hybrid Equations, Jump Diffusions)
 - (Stochastic) partial differential equations ((S)PDEs) (with both finite difference and finite element methods)
+
+### Stochastic Realizations
+
+
+### Numerical Financial Methods
+
 
 ## Getting Started
 
