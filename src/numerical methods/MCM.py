@@ -3,31 +3,10 @@ import scipy.stats as st
 import time
 import functools
 import logging
+import matplotlib.pyplot as plt
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-def log_execution(func):
-    """Decorator to log function execution."""
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        logger.info(f"Executing {func.__name__}...")
-        result = func(*args, **kwargs)
-        logger.info(f"Finished executing {func.__name__}.")
-        return result
-    return wrapper
-
-def measure_time(func):
-    """Decorator to measure the execution time of a function."""
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        result = func(*args, **kwargs)
-        end_time = time.time()
-        logger.info(f"{func.__name__} took {end_time - start_time:.4f} seconds")
-        return result
-    return wrapper
+from config import log_execution, measure_time
+%matplotlib inline
 
 class MonteCarloMethods:
     def __init__(self, seed=None):
@@ -95,8 +74,51 @@ class MonteCarloMethods:
         else:
             raise ValueError("Unsupported option type")
         return price
-"""
-# Example usage
+
+    @staticmethod
+    def plot_asset_paths(asset_paths, title="Simulated Asset Paths"):
+        plt.figure(figsize=(10, 6))
+        for i in range(min(10, len(asset_paths))):  # Plot only a subset if there are many paths
+            plt.plot(asset_paths[i], lw=0.5)
+        plt.title(title)
+        plt.xlabel("Time Steps")
+        plt.ylabel("Asset Price")
+        plt.grid(True)
+        plt.show()
+
+    @staticmethod
+    def plot_option_price_convergence(prices, title="Option Price Convergence"):
+        plt.figure(figsize=(10, 6))
+        plt.plot(prices, lw=1)
+        plt.title(title)
+        plt.xlabel("Simulation Runs")
+        plt.ylabel("Option Price")
+        plt.grid(True)
+        plt.show()
+
+    @staticmethod
+    def plot_histogram(data, bins=50, title="Histogram"):
+        plt.figure(figsize=(10, 6))
+        plt.hist(data, bins=bins, edgecolor='k', alpha=0.7)
+        plt.title(title)
+        plt.xlabel("Value")
+        plt.ylabel("Frequency")
+        plt.grid(True)
+        plt.show()
+
+    @staticmethod
+    def plot_var_distribution(portfolio_returns, var, title="VaR Distribution"):
+        plt.figure(figsize=(10, 6))
+        plt.hist(portfolio_returns, bins=50, edgecolor='k', alpha=0.7)
+        plt.axvline(var, color='r', linestyle='--', label=f'VaR at {var:.2f}')
+        plt.title(title)
+        plt.xlabel("Portfolio Return")
+        plt.ylabel("Frequency")
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+
+"""# Example usage
 if __name__ == "__main__":
     mcm = MonteCarloMethods(seed=42)
     S0 = 100  # Initial stock price
@@ -111,11 +133,25 @@ if __name__ == "__main__":
     print(f"European Call Option Price: {call_price}")
     print(f"European Put Option Price: {put_price}")
 
-    # Generate random returns for VaR calculation
+    # random returns generation
     portfolio_returns = mcm.generate_random_numbers(10000, 'normal', mu=0.01, sigma=0.02)
     var_95 = mcm.estimate_var(portfolio_returns, alpha=0.05)
     cvar_95 = mcm.estimate_cvar(portfolio_returns, alpha=0.05)
 
     print(f"Value at Risk (95%): {var_95}")
     print(f"Conditional Value at Risk (95%): {cvar_95}")
-"""
+
+    # asset paths
+    asset_paths = mcm.simulate_asset_paths(S0, T, r, sigma, 100, 50)
+    MonteCarloMethods.plot_asset_paths(asset_paths)
+
+    #option price convergence
+    prices = [mcm.price_european_option(S0, K, T, r, sigma, option_type='call', n_sims=i) for i in range(1, 1001)]
+    MonteCarloMethods.plot_option_price_convergence(prices)
+
+    # Histogram of Portfolio Returns
+    MonteCarloMethods.plot_histogram(portfolio_returns)
+
+    # VAR Plot
+    MonteCarloMethods.plot_var_distribution(portfolio_returns, var_95)
+    """
