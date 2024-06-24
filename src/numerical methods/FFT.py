@@ -9,7 +9,6 @@ from black_scholes import BlackScholes
 
 from config import log_execution, measure_time
 
-%matplotlib inline
 
 class FourierTransformMethods:
     def __init__(self, seed=None):

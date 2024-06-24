@@ -10,8 +10,6 @@ from config import log_execution, measure_time
 
 import matplotlib.pyplot as plt
 
-%matplotlib inline
-
 class BlackScholesNumericalMethods:
     def __init__(self, seed=None):
         if seed is not None:

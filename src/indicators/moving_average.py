@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-%matplotlib notebook
+
 
 # Decorator for logging function calls
 def log_function_call(func):
