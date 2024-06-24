@@ -5,31 +5,6 @@ import scipy.sparse.linalg as spla
 from config import log_execution, measure_time
 import matplotlib.pyplot as plt
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-def log_execution(func):
-    """Decorator to log function execution."""
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        logger.info(f"Executing {func.__name__}...")
-        result = func(*args, **kwargs)
-        logger.info(f"Finished executing {func.__name__}.")
-        return result
-    return wrapper
-
-def measure_time(func):
-    """Decorator to measure the execution time of a function."""
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        result = func(*args, **kwargs)
-        end_time = time.time()
-        logger.info(f"{func.__name__} took {end_time - start_time:.4f} seconds")
-        return result
-    return wrapper
-
 class FiniteDifferenceMethods:
     def __init__(self):
         pass
@@ -112,7 +87,7 @@ class FiniteDifferenceMethods:
         plt.title('Finite Difference Method Results')
         plt.show()
 
-# Example usage
+"""# Example usage
 if __name__ == "__main__":
     fdm = FiniteDifferenceMethods()
     S_max = 200
@@ -137,3 +112,4 @@ if __name__ == "__main__":
     option_price_implicit = fdm.interpolate_option_price(S0)
     print(f"Option price (implicit) at S0={S0}: {option_price_implicit}")
     fdm.plot_results()
+"""
