@@ -123,7 +123,12 @@ Efficient solvers for modeling chemical reactions and biological processes.
 - Monte Carlo Methods
 - Quasi Monte Carlo Methods
 - FFT Methods
-
+- Mean Variance Optimization
+- Binomial model
+- Finite Difference Methods
+- Pseudo-Random Numbers
+- Kalman Filter
+- Trinomial Methods
 
 ## Getting Started
 
