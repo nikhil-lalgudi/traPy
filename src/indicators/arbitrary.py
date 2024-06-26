@@ -8,6 +8,10 @@ from functools import wraps
 from moving_average import smoothed_moving_average
 from Price_characteristics import true_range, average_true_range
 
+class EndType(Enum):
+    HIGH_LOW = 1
+    CLOSE = 2
+
 def timing_decorator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -36,12 +40,6 @@ def exception_handling_decorator(func):
             print(f"Exception occurred in function '{func.__name__}': {e}")
             return None
     return wrapper
-
-%matplotlib inline 
-
-class EndType(Enum):
-    HIGH_LOW = 1
-    CLOSE = 2
 
 def get_pivots(df, left_span=2, right_span=2, max_trend_periods=20, end_type=EndType.HIGH_LOW):
     pivots = []
@@ -128,7 +126,7 @@ def plot_fractals(df):
 
 
 def get_atr_stop(df, lookback_periods=21, multiplier=3, end_type=EndType.CLOSE):
-    df = average_true_range(df, period=lookback_periods)
+    df = average_true_range(df, n = lookback_periods)
     
     if end_type == EndType.CLOSE:
         df['atr_stop_long'] = df['close'] - (df['atr'] * multiplier)
@@ -240,15 +238,8 @@ def plot_hurst_exponent(df, max_lag=20):
     
     return hurst_value
 
-## for later use abtraction
-
-def calculate_atr(df, period=10):
-    df['tr'] = np.maximum((df['high'] - df['low']), np.maximum(abs(df['high'] - df['close'].shift(1)), abs(df['low'] - df['close'].shift(1))))
-    df['atr'] = df['tr'].rolling(window=period).mean()
-    return df
-
 def calculate_supertrend(df, atr_period=10, multiplier=3):
-    df = calculate_atr(df, period=atr_period)
+    df = average_true_range(df, n=atr_period)
 
     df['basic_upper_band'] = (df['high'] + df['low']) / 2 + multiplier * df['atr']
     df['basic_lower_band'] = (df['high'] + df['low']) / 2 - multiplier * df['atr']

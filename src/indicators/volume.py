@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-
+from error-handler import log_execution_time
 
 class DataPoint:
     def __init__(self, date, open, high, low, close, volume):
@@ -14,15 +14,12 @@ class DataPoint:
         self.close = close
         self.volume = volume
 
-        #OHLCV = Open, High, Low, Close, Volume
-
-def get_adl(DataPoint: List[DataPoint], sma_periods: Optional[int] = None):
+@log_execution_time
+def get_adl(DataPoints: List[DataPoint], sma_periods: Optional[int] = None):
     adl_values = []
     adl = 0
-
     for DataPoint in DataPoints:
-        money_flow_multiplier = ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) /
-        (DataPoint.high - DataPoint.low) if (DataPoint.high - DataPoint.low) != 0 else 0
+        money_flow_multiplier = ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) / (DataPoint.high - DataPoint.low) if (DataPoint.high - DataPoint.low) != 0 else 0
         money_flow_volume = money_flow_multiplier * DataPoint.volume
         adl += money_flow_volume
         adl_values.append({
@@ -39,12 +36,11 @@ def get_adl(DataPoint: List[DataPoint], sma_periods: Optional[int] = None):
                 adl_values[i]['adl_sma'] = sum_adl / sma_periods
             else:
                 adl_values[i]['adl_sma'] = None
-
     return adl_values
 
-def get_cmf(DataPoint: List[DataPoint], lookback_periods: int = 20):
+@log_execution_time
+def get_cmf(DataPoints: List[DataPoint], lookback_periods: int = 20):
     cmf_values = []
-
     for i in range(len(DataPoints)):
         if i + 1 >= lookback_periods:
             sum_mfv = 0
@@ -52,8 +48,7 @@ def get_cmf(DataPoint: List[DataPoint], lookback_periods: int = 20):
 
             for j in range(i + 1 - lookback_periods, i + 1):
                 DataPoint = DataPoints[j]
-                money_flow_multiplier = ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) /
-                (DataPoint.high - DataPoint.low) if (DataPoint.high - DataPoint.low) != 0 else 0
+                money_flow_multiplier = ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) / (DataPoint.high - DataPoint.low) if (DataPoint.high - DataPoint.low) != 0 else 0
                 money_flow_volume = money_flow_multiplier * DataPoint.volume
                 sum_mfv += money_flow_volume
                 sum_volume += DataPoint.volume
@@ -61,14 +56,13 @@ def get_cmf(DataPoint: List[DataPoint], lookback_periods: int = 20):
             cmf = sum_mfv / sum_volume if sum_volume != 0 else 0
         else:
             cmf = None
-
         cmf_values.append({
-            'date': DataPoint[i].date,
+            'date': DataPoints[i].date,
             'cmf': cmf
         })
-
     return cmf_values
 
+@log_execution_time
 def calculate_ema(values: List[float], period: int) -> List[Optional[float]]:
     emas = []
     multiplier = 2 / (period + 1)
@@ -83,66 +77,57 @@ def calculate_ema(values: List[float], period: int) -> List[Optional[float]]:
         
     return emas
 
+@log_execution_time
 def get_chaikin_osc(DataPoints: List[DataPoint], fast_periods: int = 3, slow_periods: int = 10):
     adl = []
     adl_sum = 0
 
     for DataPoint in DataPoints:
-        money_flow_multiplier = ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) /
-        (DataPoint.high - DataPoint.low) if (DataPoint.high - DataPoint.low) != 0 else 0
+        money_flow_multiplier = ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) / (DataPoint.high - DataPoint.low) if (DataPoint.high - DataPoint.low) != 0 else 0
         money_flow_volume = money_flow_multiplier * DataPoint.volume
         adl_sum += money_flow_volume
         adl.append(adl_sum)
-
     fast_ema = calculate_ema(adl, fast_periods)
     slow_ema = calculate_ema(adl, slow_periods)
-
     chaikin_oscillator = [fast - slow if fast is not None and slow is not None else None for fast, slow in zip(fast_ema, slow_ema)]
-
     results = []
     for i, DataPoint in enumerate(DataPoints):
         results.append({
             'date': DataPoint.date,
             'oscillator': chaikin_oscillator[i],
             'adl': adl[i],
-            'money_flow_multiplier': ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) /
-              (DataPoint.high - DataPoint.low) if (DataPoint.high - DataPoint.low) != 0 else 0,
-            'money_flow_volume': ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) /
-              (DataPoint.high - DataPoint.low) * DataPoint.volume if (DataPoint.high - DataPoint.low) != 0 else 0
+            'money_flow_multiplier': ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) / (DataPoint.high - DataPoint.low) if (DataPoint.high - DataPoint.low) != 0 else 0,
+            'money_flow_volume': ((DataPoint.close - DataPoint.low) - (DataPoint.high - DataPoint.close)) / (DataPoint.high - DataPoint.low) * DataPoint.volume if (DataPoint.high - DataPoint.low) != 0 else 0
         })
-
     return results
 
+@log_execution_time
 def get_pvi(datapoints: List[DataPoint]):
     pvi_values = []
     pvi = 1000  # Starting value for PVI
-
     for i in range(1, len(datapoints)):
         if datapoints[i].volume > datapoints[i - 1].volume:
             pvi += (datapoints[i].close - datapoints[i - 1].close) / datapoints[i - 1].close * pvi
-
         pvi_values.append({
             'date': datapoints[i].date,
             'pvi': pvi
         })
-
     return pvi_values
 
+@log_execution_time
 def get_nvi(datapoints: List[DataPoint]):
     nvi_values = []
     nvi = 1000  # Starting value for NVI
-
     for i in range(1, len(datapoints)):
         if datapoints[i].volume < datapoints[i - 1].volume:
             nvi += (datapoints[i].close - datapoints[i - 1].close) / datapoints[i - 1].close * nvi
-
         nvi_values.append({
             'date': datapoints[i].date,
             'nvi': nvi
         })
-
     return nvi_values
 
+@log_execution_time
 def calculate_eom(df, period=14):
     df['midpoint_move'] = ((df['high'] + df['low']) / 2).diff()
     df['box_ratio'] = (df['volume'] / 10000) / (df['high'] - df['low'])
@@ -150,9 +135,9 @@ def calculate_eom(df, period=14):
     df['eom_sma'] = df['eom'].rolling(window=period).mean()
     return df
 
+@log_execution_time
 def plot_eom(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
-
     # Plot OHLC data
     ax1.plot(df['date'], df['close'], label='Close Price')
     ax1.set_title('Stock Price')
@@ -179,16 +164,16 @@ def plot_eom(df):
             start = region.index[0]
             end = region.index[-1]
             ax2.axvspan(df['date'][start], df['date'][end], color='yellow', alpha=0.1)
-
     plt.show()
 
+@log_execution_time
 def calculate_adl(df):
     mf_multiplier = ((df['close'] - df['low']) - (df['high'] - df['close'])) / (df['high'] - df['low'])
     mf_volume = mf_multiplier * df['volume']
     df['adl'] = mf_volume.cumsum()
     return df
 
-# Function to plot the ADL indicator
+@log_execution_time
 def plot_acc_dist(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
 
@@ -222,6 +207,7 @@ def plot_acc_dist(df):
 
     plt.show()
 
+@log_execution_time
 def calculate_vpt(df):
     vpt = [0]  # VPT starts at 0
     for i in range(1, len(df)):
@@ -229,16 +215,14 @@ def calculate_vpt(df):
     df['vpt'] = vpt
     return df
 
-# Function to plot the VPT indicator
+@log_execution_time
 def plot_vpt(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
-
     # Plot OHLC data
     ax1.plot(df['date'], df['close'], label='Close Price')
     ax1.set_title('Stock Price')
     ax1.set_ylabel('Price')
     ax1.legend()
-
     # Plot VPT indicator
     ax2.plot(df['date'], df['vpt'], label='VPT', color='blue')
     ax2.set_title('Volume Price Trend (VPT)')
@@ -248,6 +232,7 @@ def plot_vpt(df):
 
     plt.show()
 
+@log_execution_time
 def calculate_obv(df):
     obv = [0]  # OBV starts at 0
     for i in range(1, len(df)):
@@ -260,16 +245,14 @@ def calculate_obv(df):
     df['obv'] = obv
     return df
 
-
+@log_execution_time
 def plot_obv(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
-
     # Plot OHLC data
     ax1.plot(df['date'], df['close'], label='Close Price')
     ax1.set_title('Stock Price')
     ax1.set_ylabel('Price')
     ax1.legend()
-
     # Plot OBV indicator
     ax2.plot(df['date'], df['obv'], label='OBV', color='purple')
     ax2.set_title('On-Balance Volume (OBV)')
@@ -293,6 +276,7 @@ def plot_obv(df):
 
     plt.show()
 
+@log_execution_time
 def calculate_pvo(df, fast_periods=12, slow_periods=26, signal_periods=9):
     df['ema_fast'] = calculate_ema(df['volume'], fast_periods)
     df['ema_slow'] = calculate_ema(df['volume'], slow_periods)
@@ -301,6 +285,7 @@ def calculate_pvo(df, fast_periods=12, slow_periods=26, signal_periods=9):
     df['histogram'] = df['pvo'] - df['signal']
     return df
 
+@log_execution_time
 def plot_pvo(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
 
@@ -319,11 +304,13 @@ def plot_pvo(df):
 
     plt.show()
 
+@log_execution_time
 def calculate_force_index(df, lookback_periods):
     df['force_index'] = df['close'].diff() * df['volume']
     df['force_index_ema'] = df['force_index'].ewm(span=lookback_periods, adjust=False).mean()
     return df
 
+@log_execution_time
 def plot_force_index(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
 
@@ -340,7 +327,7 @@ def plot_force_index(df):
 
     plt.show()
 
-# look at the first few days for MFI    
+@log_execution_time
 def calculate_mfi(df, lookback_periods=14):
     typical_price = (df['high'] + df['low'] + df['close']) / 3
     money_flow = typical_price * df['volume']
@@ -360,6 +347,7 @@ def calculate_mfi(df, lookback_periods=14):
     df['mfi'] = mfi
     return df
 
+@log_execution_time
 def plot_mfi(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
 
@@ -379,6 +367,7 @@ def plot_mfi(df):
 
     plt.show()
 
+@log_execution_time
 def calculate_kvo(df, fast_periods=34, slow_periods=55, signal_periods=13):
     df['typical_price'] = (df['high'] + df['low'] + df['close']) / 3
     df['volume_force'] = df['volume'] * df['typical_price'].diff().fillna(0)
@@ -388,14 +377,13 @@ def calculate_kvo(df, fast_periods=34, slow_periods=55, signal_periods=13):
     df['signal'] = calculate_ema(df['oscillator'], signal_periods)
     return df
 
+@log_execution_time
 def plot_kvo(df):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
-
     ax1.plot(df['date'], df['close'], label='Close Price')
     ax1.set_title('Stock Price')
     ax1.set_ylabel('Price')
     ax1.legend()
-
     ax2.plot(df['date'], df['oscillator'], label='KVO Oscillator', color='blue')
     ax2.plot(df['date'], df['signal'], label='Signal Line', color='orange')
     ax2.set_title('Klinger Volume Oscillator (KVO)')
@@ -405,6 +393,7 @@ def plot_kvo(df):
 
     plt.show()
 
+@log_execution_time
 def calculate_vwap(df):
     df['typical_price'] = (df['high'] + df['low'] + df['close']) / 3
     df['cum_volume'] = df['volume'].cumsum()
@@ -412,9 +401,9 @@ def calculate_vwap(df):
     df['vwap'] = df['cum_volume_price'] / df['cum_volume']
     return df
 
+@log_execution_time
 def plot_vwap(df):
     fig, ax1 = plt.subplots(figsize=(14, 10))
-
     # Plot OHLC data
     ax1.plot(df['date'], df['close'], label='Close Price')
     ax1.plot(df['date'], df['vwap'], label='VWAP', color='orange')
@@ -422,27 +411,22 @@ def plot_vwap(df):
     ax1.set_ylabel('Price')
     ax1.set_xlabel('Date')
     ax1.legend()
-
     plt.show()
+
+@log_execution_time
 def calculate_twiggs_money_flow(df, period):
     df['true_high'] = df[['high', 'close']].max(axis=1)
     df['true_low'] = df[['low', 'close']].min(axis=1)
-
     df['mfm'] = ((df['close'] - df['true_low']) - (df['true_high'] - df['close'])) / (df['true_high'] - df['true_low'])
-    
     # Handle division by zero (when true_high == true_low)
-    df['mfm'] = df['mfm'].replace([float('inf'), -float('inf')], 0).fillna(0)
-   
-    df['mfv'] = df['mfm'] * df['volume']
-    
+    df['mfm'] = df['mfm'].replace([float('inf'), -float('inf')], 0).fillna(0) 
+    df['mfv'] = df['mfm'] * df['volume'] 
     df['tmf'] = df['mfv'].rolling(window=period).sum() / df['volume'].rolling(window=period).sum()
-    
     return df['tmf']
 
+@log_execution_time
 def plot_twiggs_money_flow(df, period=3):
-
     df['tmf'] = calculate_twiggs_money_flow(df, period)
-
     plt.figure(figsize=(12, 6))
     plt.plot(df.index, df['tmf'], label='Twiggs Money Flow', color='blue')
     plt.title('Twiggs Money Flow (TMF)')
@@ -451,7 +435,3 @@ def plot_twiggs_money_flow(df, period=3):
     plt.legend()
     plt.grid(True)
     plt.show()
-
-
-
-#15, check the first few though

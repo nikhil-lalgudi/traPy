@@ -2,27 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
-# Decorator for logging function calls
-def log_function_call(func):
-    def wrapper(*args, **kwargs):
-        print(f"Calling function '{func.__name__}' with arguments {args} and keyword arguments {kwargs}")
-        result = func(*args, **kwargs)
-        print(f"Function '{func.__name__}' completed")
-        return result
-    return wrapper
-
-# Decorator for checking required columns in data
-def check_columns(*required_columns):
-    def decorator(func):
-        def wrapper(data, *args, **kwargs):
-            if isinstance(data, pd.DataFrame):
-                missing_columns = [col for col in required_columns if col not in data.columns]
-                if missing_columns:
-                    raise ValueError(f"Missing columns in DataFrame: {missing_columns}")
-            return func(data, *args, **kwargs)
-        return wrapper
-    return decorator
+from error-handler import check_columns, log_function_call
 
 @log_function_call
 def alma(data, window_length, sigma=6.0, offset=0.85):
@@ -249,6 +229,3 @@ def tema(df, period=20):
     ema2 = ema(ema1, period)
     ema3 = ema(ema2, period)
     return 3 * (ema1 - ema2) + ema3
-
-
-#22
