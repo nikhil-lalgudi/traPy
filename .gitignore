@@ -3,3 +3,15 @@ LICENSE
 Dockerfile
 Makefile
 version.txt
+.DS_Store
+.idea
+.ipynb_checkpoints/
+.vscode
+__pycache__/
+*.bin
+*.pkl
+*.pt
+*.pyc
+input.txt
+env/
+venv/
