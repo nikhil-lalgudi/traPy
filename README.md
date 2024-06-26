@@ -129,6 +129,8 @@ Efficient solvers for modeling chemical reactions and biological processes.
 - Pseudo-Random Numbers
 - Kalman Filter
 - Trinomial Methods
+- Non-linear Solvers
+- Linear Programming
 
 ## Getting Started
 
