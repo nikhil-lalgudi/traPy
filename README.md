@@ -131,6 +131,7 @@ Efficient solvers for modeling chemical reactions and biological processes.
 - Trinomial Methods
 - Non-linear Solvers
 - Linear Programming
+- Unconstrained Optimization
 
 ## Getting Started
 
