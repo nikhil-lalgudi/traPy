@@ -1,71 +1,19 @@
-# Technical Analysis Library in Python
-### By Nikhil Lalgudi Vaidyanathan
+# **TraPy**
+### *By Nikhil Lalgudi Vaidyanathan*
 
-An all-in-one library for any form of technical analysis/advanced statistical methods for the any form of market trading. 
-Original Goal is to create an all in one library so that I can teach my mom how to use pandas and numpys to trade.
+An all-in-one library for any form of technical analysis/advanced statistical methods for the any form of market trading. The original goal is to create an all-in-one library so that I can teach my mom how to use pandas and numpys to trade. This repository is open source and contains most well-known technical indicators for technical analysis of the market.
 
-Repo is open source and contains most well known technical indicators for technical analysis of the market. 
+## **Core Features**
 
-# Core Features
-## Indicators
-*Graph-trends*: Bollinger Bands, Donchian Channels, fractal chaos bands, keltner channels, moving average envelopes, starc bands, price channels, pivot points, rolling pivot points, standard deviation channels, Ichimoku Cloud, Parabolic SAR
+### **Indicators**
+- **Graph-trends**: Bollinger Bands, Donchian Channels, fractal chaos bands, keltner channels, moving average envelopes, starc bands, price channels, pivot points, rolling pivot points, standard deviation channels, Ichimoku Cloud, Parabolic SAR
+- **Moving averages**: alma, dema, epma, ema, hilbert transform instantaneous trendline, hull moving average, Kama, lsma, mesa adaptive moving average, mcginley dynamic, modified moving average, running moving average, simple moving average, smoothed moving average, tillson t3 moving average, tema, vwap, vwma, wma, frama, zlema, tema
+- **Oscillators**: awesome oscillator, cmo, cci, Connors rsi, dpo, kdj_index, RSI, schaff_trend_cycle, stochastic_momentum_index, stochastic_oscillator, stochastic_rsi, trix (triple_ema_oscillator), ultimate_oscillator, williams_r, Elder-Ray Index, RVI
+- **Price Characteristics**: Average True Range, Balance of Power, Bull-Bear Power, Choppiness Index, Dominant Cycle Periods, Historical Volatility, Hurst Exponent, Momentum Oscillator, Normalized Average True Range, Price Momentum Oscillator, Price Relative Strength, Rate of Change, Rescaled Range Analysis, True Range, True Strength Index, Ulcer Index, Moving Average Crossover (and its plotting function), Commodity Channel Index, Directional Movement Index, Vortex Indicator, Beta Coefficient, Correlation Coefficient, Linear Regression, Mean Absolute Deviation, Mean Absolute Percentage Error, Mean Square Error, R-squared, Standard Deviation, Z-score
+- **Transforms**: ehlers_fisher_transform, heikin_ashi, renko, zigzag_indicator. Kagi Charts, Line Break Charts
 
-*Moving averages*: alma, dema, epma, ema, hilbert transform instantaneous trendline, hull moving average, Kama, lsma, mesa adaptive moving average, mcginley dynamic, modified moving average, running moving average, simple moving average, smoothed moving average, tillson t3 moving average, tema, vwap, vwma, wma, frama, zlema, tema
-
-*Oscilators*: awesome oscillator, cmo, cci, Connors rsi, dpo, kdj_index, RSI, schaff_trend_cycle, stochastic_momentum_index, stochastic_oscillator, stochastic_rsi, trix (triple_ema_oscillator), ultimate_oscillator, williams_r, Elder-Ray Index, RVI
-
-*Price Characteristics*: Average True Range, Balance of Power, Bull-Bear Power, Choppiness Index, Dominant Cycle Periods, Historical Volatility, Hurst Exponent, Momentum Oscillator, Normalized Average True Range, Price Momentum Oscillator, Price Relative Strength, Rate of Change, Rescaled Range Analysis, True Range, True Strength Index, Ulcer Index, Moving Average Crossover (and its plotting function), Commodity Channel Index, Directional Movement Index, Vortex Indicator, Beta Coefficient, Correlation Coefficient, Linear Regression, Mean Absolute Deviation, Mean Absolute Percentage Error, Mean Square Error, R-squared, Standard Deviation, Z-score
-
-*Transforms*: ehlers_fisher_transform, heikin_ashi, renko, zigzag_indicator. Kagi Charts, Line Break Charts
-Volume: adl, cmf, chaikin osc, pvi, nvi, eom, adl, vpt, obv, pvo, force index, mfi, kvo, vwap, tmf
-## Interactive Indicators
-
-## Advanced Statistical Methods
-### Solvers of different differential equations with GPU support and efficient backpropagation with PyTorch
-
-#### Delay Differential Equations:
-- Differential algebraic equations (DAEs)
-
-#### Differential algebraic equations:
-- Delay differential equations (DDEs)
-
-#### Discrete Equations:
-- Discrete equations (function maps, discrete stochastic (Gillespie/Markov) simulations)
-
-#### Mixed discrete and continuous equations:
-- Mixed discrete and continuous equations (Hybrid Equations, Jump Diffusions)
-
-#### Neutral, retarded, and algebraic delay differential equations: 
-- Neutral, retarded, and algebraic delay differential equations (NDDEs, RDDEs, and DDAEs)
-
-#### Ordinary Differential Equations:
-- Ordinary differential equations (ODEs)
-- Split and Partitioned ODEs (Symplectic integrators, IMEX Methods)
-
-#### Random Differential Equations:
-- Random differential equations (RODEs or RDEs)
-
-#### Stochastic Differential Equations:
-- (Stochastic) partial differential equations ((S)PDEs) (with both finite difference and finite element methods)
-- Stochastic delay differential equations (SDDEs)
-- Stochastic ordinary differential equations (SODEs or SDEs)
-- Stochastic differential-algebraic equations (SDAEs)
-- Experimental support for stochastic neutral, retarded, and algebraic delay differential equations (SNDDEs, SRDDEs, and SDDAEs)
-
-#### Integro-Differential Equations: 
-Include solvers for equations involving both integrals and derivatives.
-
-#### Fractional Differential Equations: 
-Support for equations involving fractional derivatives, which are useful in various fields such as viscoelasticity and anomalous diffusion.
-
-#### Hamiltonian Systems
-Specialized solvers for systems governed by Hamiltonian mechanics.
-
-#### Reaction-Diffusion Systems: 
-Efficient solvers for modeling chemical reactions and biological processes.
-
-### Stochastic Realizations
-#### Continous Processes
+### **Stochastic Realizations**
+#### **Continuous Processes**
 - Bessel
 - Brownian Bridge
 - Brownian Excursion
@@ -89,7 +37,7 @@ Efficient solvers for modeling chemical reactions and biological processes.
 - Variance Gamma
 - Wiener
 
-#### Diffusion Processes
+#### **Diffusion Processes**
 - Constant Elasticity Variance
 - Cox Ingersoll Ross
 - Diffusion
@@ -99,7 +47,7 @@ Efficient solvers for modeling chemical reactions and biological processes.
 - Ornstein Ulhenbeck
 - Mean-Reverting 
 
-#### Discrete Processes
+#### **Discrete Processes**
 - Bernoulli 
 - Chinese Restaurant
 - Dirichlet 
@@ -108,17 +56,16 @@ Efficient solvers for modeling chemical reactions and biological processes.
 - Moran
 - Markov Chain Monte Carlo
 - Random Walk
-- Renewal Proces
+- Renewal Process
 - Yule Process
 
-#### Noise
+#### **Noise**
 - Alpha-Stable Noise
 - Colored Noise
 - Fractional Gaussian
 - Gaussian Noise
 
-
-### Numerical Financial Methods
+### **Numerical Financial Methods**
 - Black Scholes Numerical Methods
 - Monte Carlo Methods
 - Quasi Monte Carlo Methods
@@ -133,35 +80,81 @@ Efficient solvers for modeling chemical reactions and biological processes.
 - Linear Programming
 - Unconstrained Optimization
 
-## Getting Started
+## **Interactive Indicators**
 
-### Prerequisites
-Have at least Python 3.6 installed
-and:
+## **Advanced Statistical Methods**
+### **Solvers of different differential equations with GPU support and efficient backpropagation with PyTorch**
+
+#### **Delay Differential Equations:**
+- Differential algebraic equations (DAEs)
+
+#### **Differential algebraic equations:**
+- Delay differential equations (DDEs)
+
+#### **Discrete Equations:**
+- Discrete equations (function maps, discrete stochastic (Gillespie/Markov) simulations)
+
+#### **Mixed discrete and continuous equations:**
+- Mixed discrete and continuous equations (Hybrid Equations, Jump Diffusions)
+
+#### **Neutral, retarded, and algebraic delay differential equations:**
+- Neutral, retarded, and algebraic delay differential equations (NDDEs, RDDEs, and DDAEs)
+
+#### **Ordinary Differential Equations:**
+- Ordinary differential equations (ODEs)
+- Split and Partitioned ODEs (Symplectic integrators, IMEX Methods)
+
+#### **Random Differential Equations:**
+- Random differential equations (RODEs or RDEs)
+
+#### **Stochastic Differential Equations:**
+- (Stochastic) partial differential equations ((S)PDEs) (with both finite difference and finite element methods)
+- Stochastic delay differential equations (SDDEs)
+- Stochastic ordinary differential equations (SODEs or SDEs)
+- Stochastic differential-algebraic equations (SDAEs)
+- Experimental support for stochastic neutral, retarded, and algebraic delay differential equations (SNDDEs, SRDDEs, and SDDAEs)
+
+#### **Integro-Differential Equations:**
+Include solvers for equations involving both integrals and derivatives.
+
+#### **Fractional Differential Equations:**
+Support for equations involving fractional derivatives, which are useful in various fields such as viscoelasticity and anomalous diffusion.
+
+#### **Hamiltonian Systems**
+Specialized solvers for systems governed by Hamiltonian mechanics.
+
+#### **Reaction-Diffusion Systems:**
+Efficient solvers for modeling chemical reactions and biological processes.
+
+## **Getting Started**
+### **Prerequisites**
+Make sure you have at least Python 3.6 installed, along with the following packages:
+- **numpy**
+- **pandas**
+- **matplotlib**
+
+You can install the required packages using the following command:
 ```bash
-   pip install numpy
-   pip install pandas
-   pip install matplotlib
-   ```
+pip install numpy pandas matplotlib
+```
 
-### Installation
-Clone the repository:
-   ```bash
-   git clone https://github.com/nikhil-lalgudi/TA-Library.git
-   ```
+### **Installation**
+To get started, clone the repository using the following command:
+```bash
+git clone https://github.com/nikhil-lalgudi/TraPy.git
+```
 
-## Contributing
-We welcome contributions from the community! To contribute:
+## **Contributing**
+We welcome contributions from the community! If you would like to contribute, please follow these steps:
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature-branch`).
 3. Make your changes and commit them (`git commit -m 'Add new feature'`).
 4. Push to the branch (`git push origin feature-branch`).
 5. Create a pull request.
 
-## Feedback and Ideas
+## **Feedback and Ideas**
+We'd love to hear from you! If you have any feedback, new ideas, or just want to discuss the project, feel free to reach out to us at [nikhillv@umich.edu](mailto:nikhillv@umich.edu).
 
-We'd love to hear from you! If you have any feedback, new ideas, or just want to discuss the project, feel free to reach out at [nikhillv@umich.edu](mailto:nikhillv@umich.edu).
-
-## License
-
+## **License**
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
