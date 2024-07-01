@@ -61,7 +61,6 @@ class UnconstrainedOptimization:
         
         def grad_lagrangian(x, lambdas):
             return self.grad_f(x) + np.dot(self.grad_g(x).T, lambdas)
-        
         x = x0
         lambdas = lambda0
         for _ in range(max_iter):
